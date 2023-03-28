@@ -7,28 +7,37 @@
 #define MAX 1000
 
 void inserir_na_string(char string[MAX + 1], int posicao, char caracter) {
-    int i;
-    for (i = strlen(string); i >= posicao; i++) {
-        string[i + 1] = string[i];
+    size_t i;
+    for (i = strlen(string) + 1; i > posicao; i--) {
+        string[i] = string[i - 1];
     }
     string[posicao] = caracter;
 }
 
-int main() {
-    printf("Insira string de até %d caracteres:\n", MAX);
+int caracter_estranho(char c) {
+    if (c == ' ')
+        return 0;
+    if ('0' <= c && c <= '9')
+        return 0;
+    if ('A' <= c && c <= 'Z')
+        return 0;
+    if ('a' <= c && c <= 'z')
+        return 0;
+    return 1;
+}
 
+int main(void) {
     char input[MAX + 1];
+
+    printf("Insira uma string:\n");
     scanf("%s", input);
     
-    int atual;
-    int i, n = strlen(input);
-    for (i = 0; i < n; i++) {
-        atual = (int)input[i];
-        if (atual != 32 && atual < 48 && atual > 57 && atual < 65 && atual > 90 && atual < 97 && atual > 122) {
-            printf("achei um caracter estranho!!\n");
+    size_t i;
+    for (i = 0; i < strlen(input); i++) {
+        if (caracter_estranho(input[i])) {
             inserir_na_string(input, i, '[');
             inserir_na_string(input, i+2, ']');
-            n = strlen(input);
+            i += 2;
         }
     }
 
