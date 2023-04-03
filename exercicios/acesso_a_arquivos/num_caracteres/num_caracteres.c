@@ -1,3 +1,5 @@
+/* Escreva um programa em C para informar o número de caracteres presentes em um arquivo de texto. */
+
 #include <stdio.h>
 #include <stdlib.h>
 
