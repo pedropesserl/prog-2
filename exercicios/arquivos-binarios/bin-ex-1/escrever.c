@@ -10,7 +10,7 @@
         fprintf(stderr, "Uso: ./escrever <arquivo>\n");                \
         exit(err);                                                     \
     } while (0)                                                
-                                                               
+                                                      
 #define FILE_ERR_EXIT(arq, err) do {                                   \
         fprintf(stderr, "Erro ao abrir/escrever arquivo %s.\n", arq);  \
         exit(err);                                                     \
@@ -37,6 +37,8 @@ int main(int argc, char **argv) {
         FILE_ERR_EXIT(filename, 1);
 
     long *vetor = (long*)malloc((MAX + 100) * sizeof(long));
+    if (!vetor)
+        MEM_ERR_EXIT(1);
 
     long n;
     long i;
