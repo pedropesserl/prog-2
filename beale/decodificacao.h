@@ -1,0 +1,6 @@
+#ifndef DECODIFICACAO_H_
+#define DECODIFICACAO_H_
+
+
+
+#endif /* DECODIFICACAO_H_ */
