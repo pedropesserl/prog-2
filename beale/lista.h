@@ -1,45 +1,76 @@
 #ifndef LISTA_H_
 #define LISTA_H_
 
-typedef struct no {
-    struct no *prox;
-    int dado;
-} No;
+typedef struct no_int {
+    struct no_int *prox;
+    int elem;
+} No_int;
 
-typedef struct lista {
-    No *ini;
+typedef struct lista_int {
+    No_int *ini;
     size_t tamanho;
-} Lista;
+} L_int;
+
+typedef struct no_lista {
+    struct no_lista *prox;
+    char chave;
+    L_int *elem;
+} No_lista;
+
+typedef struct lista_lista {    
+    No_lista *ini;
+    size_t tamanho;
+} L_lista;
 
 /* Cria uma lista vazia e a retorna; se falhar retorna NULL.              */
-Lista *cria_lista();
+L_int *cria_l_int();
 
 /* Remove todos os elementos da lista, libera espaço e retorna NULL.      */
-Lista *destroi_lista(Lista *lista);
+L_int *destroi_l_int(L_int *lista);
 
 /* Retorna 1 se a lista está vazia e 0 caso contrário.                    */
-int lista_vazia(Lista *lista);
+int l_int_vazia(L_int *lista);
 
 /* Retorna o número de elementos da lista.                                */
-size_t tamanho_lista(Lista *lista);
+size_t tamanho_l_int(L_int *lista);
 
-/* As funções para inserir na fila respeitam ordens diferentes.          
- * Não é aconselhável usar mais de uma dessas funções no mesmo programa.  */
-
-/* Insere o elemento elem no início da lista, independente da ordem.
+/* Insere o elemento elem no início da lista.
  * Retorna 1 se a operação foi bem-sucedida e 0 caso contrário.           */
-int insere_lista_ini(Lista *lista, int elem);
+int insere_l_int_ini(L_int *lista, int elem);
 
-/* Atribui ao inteiro apontado por elem o elemento da posição pos da
- * lista (0-indexed). Se pos >= tamanho_lista(lista), retorna 0.             
- * Se a operação for bem-sucedida, retorna 1.                             */
-int elem_lista(Lista *lista, size_t pos, int *elem);
+/* Retorna um ponteiro que aponta para o elemento da posição pos
+ * (0-indexed) da lista. Se pos >= tamanho_l_int(lista), retorna NULL.    */
+int *elem_l_int(L_int *lista, size_t pos);
 
-/* Imprime os elementos da lista, para stdout, na ordem armazenada.       */
-void imprime_lista(Lista *lista);
+/* Imprime os elementos da lista, para stdout, na ordem armazenada.
+ * Use essa função apenas se os elementos armazenados forem inteiros.     */
+void imprime_l_int(L_int *lista);
 
 /* Imprime os elementos da lista, no arquivo especificado por stream,
- * na ordem armazenada.                                                   */
-void f_imprime_lista(FILE *stream, Lista *lista);
+ * na ordem armazenada.
+ * Use essa função apenas se os elementos armazenados forem inteiros.     */
+void f_imprime_l_int(FILE *stream, L_int *lista);
+
+/* Mesmas funções acima, mas para listas de listas de inteiros.           */
+
+L_lista *cria_l_lista();
+
+L_lista *destroi_l_lista(L_lista *lista);
+
+int l_lista_vazia(L_lista *lista);
+
+size_t tamanho_l_lista(L_lista *lista);
+
+/* Essa função não checa se já existe uma lista com a mesma chave.        */
+int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem);
+
+/* Insere em ordem alfanumérica da chave.                                 */
+int insere_l_lista_ord(L_lista *lista, char chave, L_int *elem);
+
+L_int *elem_l_lista(L_lista *lista, size_t pos);
+
+void imprime_l_lista(L_lista *lista);
+
+void f_imprime_l_lista(FILE *stream, L_lista *lista);
 
 #endif /* LISTA_H_ */

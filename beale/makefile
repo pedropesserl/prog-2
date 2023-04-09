@@ -17,8 +17,8 @@ codificacao.o: codificacao.c
 decodificacao.o: decodificacao.c
 	gcc -c decodificacao.c $(CFLAGS)
 
-t_chaves: t_chaves.o chaves.o
-	gcc -o t_chaves t_chaves.o chaves.o
+lista.o: lista.c
+	gcc -c lista.c $(CFLAGS)
 
 t_codificacao: t_codificacao.o codificacao.o
 	gcc -o t_codificacao t_codificacao.o codificacao.o
