@@ -2,8 +2,8 @@ CFLAGS = -Wall -g -std=c99
 
 all: beale
 
-beale: beale.o chaves.o codificacao.o decodificacao.o
-	gcc -o beale beale.o chaves.o codificacao.o decodificacao.o
+beale: beale.o chaves.o codificacao.o decodificacao.o lista.o
+	gcc -o beale beale.o chaves.o codificacao.o decodificacao.o lista.o
 
 beale.o: beale.c
 	gcc -c beale.c $(CFLAGS)
@@ -19,6 +19,9 @@ decodificacao.o: decodificacao.c
 
 lista.o: lista.c
 	gcc -c lista.c $(CFLAGS)
+
+t_chaves: t_chaves.o chaves.o lista.o
+	gcc -o t_chaves t_chaves.o chaves.o lista.o
 
 t_codificacao: t_codificacao.o codificacao.o
 	gcc -o t_codificacao t_codificacao.o codificacao.o
