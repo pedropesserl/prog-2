@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "chaves.h"
 
+#if 0
 int cria_chaves(char *livro_cifra, L_int **chaves) {
     FILE *arq = fopen(livro_cifra, "r");
     if (!arq)
@@ -26,7 +27,13 @@ int cria_chaves(char *livro_cifra, L_int **chaves) {
 }
 
 int exporta_chaves(char *output, L_int **chaves, size_t nchaves) {
-    FILE *arq = fopen(output, "w");
+    FILE *arq = fopen(output, "r");
+    if (arq) {
+        fprintf(stderr, "Erro: arquivo %s já existe.\n", output);
+        exit(1);
+    }
+
+    arq = fopen(output, "w");
     if (!arq)
         return 1;
 
@@ -40,3 +47,21 @@ int exporta_chaves(char *output, L_int **chaves, size_t nchaves) {
 
     return 0;
 }
+
+#else
+
+int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
+
+
+}
+
+int cria_chaves(char *livro_cifra, L_lista *chaves) {
+    FILE *arq = fopen(livro_cifra, "r");
+    if (!arq)
+        return 1;
+
+    
+
+}
+
+#endif

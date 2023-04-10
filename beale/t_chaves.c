@@ -3,14 +3,14 @@
 #include "chaves.h"
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "Uso: ./t_chaves <arquivo>");
+    if (argc != 3) {
+        fprintf(stderr, "Uso: ./t_chaves <livro_cifra> <output>");
         exit(1);
     }
     L_int **chaves = (L_int**)calloc(127, sizeof(L_int*));
 
     char *livro_cifra = argv[1];
-    char *output = "chaves_geradas.txt";
+    char *output = argv[2];
 
     for (size_t i = 0; i < 127; i++) {
         chaves[i] = cria_l_int();

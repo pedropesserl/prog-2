@@ -1,6 +1,6 @@
 CFLAGS = -Wall -g -std=c99
 
-all: beale
+all: beale t_chaves t_codificacao t_decodificacao
 
 beale: beale.o chaves.o codificacao.o decodificacao.o lista.o
 	gcc -o beale beale.o chaves.o codificacao.o decodificacao.o lista.o
@@ -33,4 +33,4 @@ clean:
 	rm *.o
 
 purge:
-	rm *.o beale
+	rm *.o beale t_chaves t_codificacao t_decodificacao

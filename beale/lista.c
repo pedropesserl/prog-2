@@ -134,8 +134,34 @@ int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem) {
 }
 
 int insere_l_lista_ord(L_lista *lista, char chave, L_int *elem) {
-    fprintf(stderr, "insere_l_lista_ord: NÃO IMPLEMENTADO\n");
-    exit(1);
+    /* fprintf(stderr, "insere_l_lista_ord: NÃO IMPLEMENTADO\n"); */
+    /* exit(1); */
+
+    No_lista *no = (No_lista*)calloc(1, sizeof(No_lista));
+    if (!no)
+        return 0;
+
+    no->elem = elem;
+    no->chave = chave;
+    no->prox = lista->ini;
+
+    No_lista *aux;
+
+    if (no->prox && (int)no->prox->chave < (int)no->chave) {
+        no->prox = no->prox->prox;
+        lista->ini->prox = no;
+    } else
+        lista->ini = no;
+
+    while (no->prox && (int)no->prox->chave < (int)no->chave) {
+        aux = no->prox->prox;
+        no->prox->prox = no;
+        no->prox = aux;
+    }
+
+    (lista->tamanho)++;
+
+    return 1;
 }
 
 L_int *elem_l_lista(L_lista *lista, size_t pos) {
@@ -156,7 +182,10 @@ void imprime_l_lista(L_lista *lista) {
     No_lista *no = lista->ini;
     for (size_t i = 0; i < tamanho_l_lista(lista); i++) {
         printf("%c: ", no->chave);
-        imprime_l_int(no->elem);
+        if (l_int_vazia(no->elem))
+            printf("\n");
+        else
+            imprime_l_int(no->elem);
         no = no->prox;
     }
 }
