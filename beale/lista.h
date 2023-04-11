@@ -38,6 +38,10 @@ size_t tamanho_l_int(L_int *lista);
  * Retorna 1 se a operação foi bem-sucedida e 0 caso contrário.           */
 int insere_l_int_ini(L_int *lista, int elem);
 
+/* Insere o elemento elem em ordem crescente na lista.
+ * Retorna 1 se a operação foi bem-sucedida e 0 caso contrário.           */
+int insere_l_int_ord(L_int *lista, int elem);
+
 /* Retorna um ponteiro que aponta para o elemento da posição pos
  * (0-indexed) da lista. Se pos >= tamanho_l_int(lista), retorna NULL.    */
 int *elem_l_int(L_int *lista, size_t pos);

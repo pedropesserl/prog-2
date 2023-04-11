@@ -36,13 +36,42 @@ size_t tamanho_l_int(L_int *lista) {
 }
 
 int insere_l_int_ini(L_int *lista, int elem) {
-    No_int *no = (No_int*)calloc(1, sizeof(No_int));
-    if (!no)
+    No_int *novo = (No_int*)calloc(1, sizeof(No_int));
+    if (!novo)
         return 0;
 
-    no->elem = elem;
-    no->prox = lista->ini;
-    lista->ini = no;
+    novo->elem = elem;
+    novo->prox = lista->ini;
+    lista->ini = novo;
+
+    (lista->tamanho)++;
+
+    return 1;
+}
+
+int insere_l_int_ord(L_int *lista, int elem) {
+    No_int *novo = (No_int*)calloc(1, sizeof(No_int));
+    if (!novo)
+        return 0;
+
+    novo->elem = elem;
+    novo->prox = lista->ini;
+    
+    No_int *atual = lista->ini;
+    No_int *aux = NULL;
+
+    while (atual && atual->elem < novo->elem) {
+        aux = atual;
+        atual = atual->prox;
+    }
+
+    if (!aux) {
+        novo->prox = lista->ini;
+        lista->ini = novo;
+    } else {
+        novo->prox = atual;
+        aux->prox = novo;
+    }
 
     (lista->tamanho)++;
 
@@ -119,14 +148,14 @@ size_t tamanho_l_lista(L_lista *lista) {
 }
 
 int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem) {
-    No_lista *no = (No_lista*)calloc(1, sizeof(No_lista));
-    if (!no)
+    No_lista *novo = (No_lista*)calloc(1, sizeof(No_lista));
+    if (!novo)
         return 0;
 
-    no->elem = elem;
-    no->chave = chave;
-    no->prox = lista->ini;
-    lista->ini = no;
+    novo->elem = elem;
+    novo->chave = chave;
+    novo->prox = lista->ini;
+    lista->ini = novo;
 
     (lista->tamanho)++;
 
@@ -134,29 +163,27 @@ int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem) {
 }
 
 int insere_l_lista_ord(L_lista *lista, char chave, L_int *elem) {
-    /* fprintf(stderr, "insere_l_lista_ord: NÃO IMPLEMENTADO\n"); */
-    /* exit(1); */
-
-    No_lista *no = (No_lista*)calloc(1, sizeof(No_lista));
-    if (!no)
+    No_lista *novo = (No_lista*)calloc(1, sizeof(No_lista));
+    if (!novo)
         return 0;
 
-    no->elem = elem;
-    no->chave = chave;
-    no->prox = lista->ini;
+    novo->elem = elem;
+    novo->chave = chave;
 
-    No_lista *aux;
+    No_lista *atual = lista->ini;
+    No_lista *aux = NULL;
 
-    if (no->prox && (int)no->prox->chave < (int)no->chave) {
-        no->prox = no->prox->prox;
-        lista->ini->prox = no;
-    } else
-        lista->ini = no;
+    while (atual && (int)atual->chave < (int)novo->chave) {
+        aux = atual;
+        atual = atual->prox;
+    }
 
-    while (no->prox && (int)no->prox->chave < (int)no->chave) {
-        aux = no->prox->prox;
-        no->prox->prox = no;
-        no->prox = aux;
+    if (!aux) {
+        novo->prox = lista->ini;
+        lista->ini = novo;
+    } else {
+        novo->prox = atual;
+        aux->prox = novo;
     }
 
     (lista->tamanho)++;
