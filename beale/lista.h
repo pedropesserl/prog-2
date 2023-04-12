@@ -53,6 +53,7 @@ void imprime_l_int(L_int *lista);
  * na ordem armazenada.                                                   */
 void f_imprime_l_int(FILE *stream, L_int *lista);
 
+
 /* Mesmas funções acima, mas para listas de listas de inteiros.           */
 
 L_lista *cria_l_lista();
@@ -71,6 +72,10 @@ int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem);
 int insere_l_lista_ord(L_lista *lista, char chave, L_int *elem);
 
 L_int *elem_l_lista(L_lista *lista, size_t pos);
+
+/* Retorna um ponteiro que aponta para a chave da lista da posição pos
+ * (0-indexed) da lista. Se pos >= tamanho_l_int(lista), retorna NULL.    */
+char *chave_l_lista(L_lista *lista, size_t pos);
 
 /* Imprimem recursivamente os elementos de todas as listas armazenadas.   */
 void imprime_l_lista(L_lista *lista);

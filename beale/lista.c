@@ -202,6 +202,14 @@ L_int *elem_l_lista(L_lista *lista, size_t pos) {
     return no->elem;
 }
 
+char *chave_l_lista(L_lista *lista, size_t pos) {
+    if (pos >= tamanho_l_lista(lista))
+        return NULL;
+    
+    L_int *i = elem_l_lista(lista, pos);
+    return i->chave;
+}
+
 void imprime_l_lista(L_lista *lista) {
     if (l_lista_vazia(lista))
         return;
