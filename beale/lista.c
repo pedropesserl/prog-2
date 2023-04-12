@@ -202,12 +202,15 @@ L_int *elem_l_lista(L_lista *lista, size_t pos) {
     return no->elem;
 }
 
-char *chave_l_lista(L_lista *lista, size_t pos) {
+char chave_l_lista(L_lista *lista, size_t pos) {
     if (pos >= tamanho_l_lista(lista))
-        return NULL;
+        return '\0';
     
-    L_int *i = elem_l_lista(lista, pos);
-    return i->chave;
+    No_lista *no = lista->ini;
+    for (size_t i = 0; i < pos; i++)
+        no = no->prox;
+
+    return no->chave;
 }
 
 void imprime_l_lista(L_lista *lista) {

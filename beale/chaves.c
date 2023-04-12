@@ -4,12 +4,12 @@
 
 int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
     int chave_ja_existe = 0;
-    char *c_aux = NULL;
+    char c_aux;
     L_int *lista_de_valores = NULL;
     size_t i = 0;
     for (; i < tamanho_l_lista(chaves); i++) {
         c_aux = chave_l_lista(chaves, i);
-        if (*c_aux == chave) {
+        if (c_aux == chave) {
             chave_ja_existe = 1;
             break;
         }
@@ -19,7 +19,7 @@ int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
         lista_de_valores = elem_l_lista(chaves, i);
     else {
         lista_de_valores = (L_int*)calloc(1, sizeof(L_int));
-        if (!insere_l_lista_ord(chaves, lista_de_valores))
+        if (!insere_l_lista_ord(chaves, chave, lista_de_valores))
             return 0;
     }
     if (!insere_l_int_ini(lista_de_valores, valor))

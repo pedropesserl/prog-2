@@ -11,12 +11,10 @@
  * Se houver erro de alocação de memória, retorna 0. CC, retorna 1.          */
 int insere_valor_com_chave(L_lista *chaves, char chave, int valor);
 
-/* Retorna em chaves um vetor de listas de inteiros indexado pelo código
- * ASCII das letras (ex: a lista de chaves associada à letra "a" estará na
- * posição 97 do vetor). Se encontrar um caracter não ASCII, ignora.
- * A função presume que as listas já estão alocadas.
- * Se houver erro ao abrir o arquivo, retorna 1. Se houver erro de alocação
- * de memória, retorna 2. CC, retorna 0.                                     */
+/* Retorna em chaves uma lista de listas de inteiros contendo as chaves
+ * geradas a partir do arquivo livro_cifra. Se encontrar um caracter não
+ * ASCII, ignora. Se houver erro ao abrir o arquivo, retorna 1. Se houver
+ * erro de alocação de memória, retorna 2. CC, retorna 0.                    */
 int cria_chaves(char *livro_cifra, L_lista *chaves);
 
 /* Cria um arquivo e imprime nele as chaves armazenadas na lista de chaves.
