@@ -23,8 +23,8 @@ lista.o: lista.c
 t_chaves: t_chaves.o chaves.o lista.o
 	gcc -o t_chaves t_chaves.o chaves.o lista.o
 
-t_codificacao: t_codificacao.o codificacao.o
-	gcc -o t_codificacao t_codificacao.o codificacao.o
+t_codificacao: t_codificacao.o codificacao.o chaves.o lista.o
+	gcc -o t_codificacao t_codificacao.o codificacao.o chaves.o lista.o
 
 t_decodificacao: t_decodificacao.o decodificacao.o
 	gcc -o t_decodificacao t_decodificacao.o decodificacao.o

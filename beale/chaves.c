@@ -31,18 +31,18 @@ int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
 int cria_chaves(char *livro_cifra, L_lista *chaves) {
     FILE *arq = fopen(livro_cifra, "r");
     if (!arq)
-        return 1;
+        return 2;
 
     char c;
     int i = 0;
     char *palavra = (char*)calloc(MAX_WRD_LEN, sizeof(char));
     while (fscanf(arq, "%s", palavra) != EOF) {
         c = palavra[0];
-        if (21 <= c && c <= 126) {
+        if (33 <= c && c <= 126) {
             if ('A' <= c && c <= 'Z')
                 c += 32;
             if (!insere_valor_com_chave(chaves, c, i++))
-                return 2;
+                return 1;
         }
     }
 

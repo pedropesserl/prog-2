@@ -42,8 +42,12 @@ int insere_l_int_ini(L_int *lista, int elem);
  * Retorna 1 se a operação foi bem-sucedida e 0 caso contrário.           */
 int insere_l_int_ord(L_int *lista, int elem);
 
-/* Retorna um ponteiro que aponta para o elemento da posição pos
- * (0-indexed) da lista. Se pos >= tamanho_l_int(lista), retorna NULL.    */
+/* Retorna um ponteiro para um elemento aleatório da lista. Se a lista
+ * estiver vazia, retorna NULL.                                           */
+int *rand_l_int(L_int *lista);
+
+/* Retorna um ponteiro para o elemento da posição pos (0-indexed) da
+ * lista. Se pos >= tamanho_l_int(lista), retorna NULL.                   */
 int *elem_l_int(L_int *lista, size_t pos);
 
 /* Imprime os elementos da lista, para stdout, na ordem armazenada.       */
@@ -76,6 +80,10 @@ L_int *elem_l_lista(L_lista *lista, size_t pos);
 /* Retorna a chave do nodo da posição pos (0-indexed) da lista. Se
  * pos >= tamanho_l_int(lista), retorna '\0'.                             */
 char chave_l_lista(L_lista *lista, size_t pos);
+
+/* Retorna um ponteiro para a lista de inteiros correspondente à chave
+ * chave da lista de listas. Se a chave não existir, retorna NULL.        */
+L_int *elem_chave_l_lista(L_lista *lista, char chave);
 
 /* Imprimem recursivamente os elementos de todas as listas armazenadas.   */
 void imprime_l_lista(L_lista *lista);

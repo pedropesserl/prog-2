@@ -78,6 +78,19 @@ int insere_l_int_ord(L_int *lista, int elem) {
     return 1;
 }
 
+int *rand_l_int(L_int *lista) {
+    if (l_int_vazia(lista))
+        return NULL;
+
+    int n = rand() % tamanho_l_int(lista);
+    No_int *no = lista->ini;
+    for (int i = 0; i < n; i++) {
+        no = no->prox;
+    }
+
+    return &no->elem;
+}
+
 int *elem_l_int(L_int *lista, size_t pos) {
     if (pos >= tamanho_l_int(lista))
         return NULL;
@@ -211,6 +224,18 @@ char chave_l_lista(L_lista *lista, size_t pos) {
         no = no->prox;
 
     return no->chave;
+}
+
+L_int *elem_chave_l_lista(L_lista *lista, char chave) {
+    No_lista *no = lista->ini;
+
+    while (no) {
+        if (no->chave == chave)
+            return no->elem;
+        no = no->prox;
+    }
+
+    return NULL;
 }
 
 void imprime_l_lista(L_lista *lista) {
