@@ -13,11 +13,29 @@
         exit(err);                                                              \
     } while (0)
 
+#define MEM_ERR_EXIT(err) do {                                                  \
+        fprintf(stderr, "Erro na alocação de memória.\n");                      \
+        exit(err);                                                              \
+    } while (0)
+
+#define FOPEN_ERR_EXIT(err, filename) do {                                      \
+        fprintf(stderr, "Erro ao abrir/escrever arquivo %s.\n", filename);      \
+        exit(err);                                                              \
+    } while (0)
+
+#define FEXISTS_EXIT(err, filename) do {                                        \
+        fprintf(stderr, "Erro: o arquivo %s já existe.", filename);             \
+        exit(err);                                                              \
+    } while (0);
+
+#include "lista.h"
 #include "codificacao.h"
 #include "decodificacao.h"
 #include "chaves.h"
 
 int main(int argc, char **argv) {
+    int erro = 0;
+
     if (argc < 8)
         USAGE_EXIT(1);
 
@@ -27,16 +45,18 @@ int main(int argc, char **argv) {
     char *arq_chaves = NULL;
     int exportar_chaves = 0;
     int decodificar_com_chaves = 0;
+    
+    L_lista *lista_de_chaves = cria_l_lista();
+    if (!lista_de_chaves)
+        MEM_ERR_EXIT(1);
 
     opterr = 0;
     char c = getopt(argc, argv, "ed");
-    
     if (c == 'e') {
         while ((c = getopt(argc, argv, "b:m:o:c:")) != -1)
             switch (c) {
                 case 'b':
                     livro_cifra = optarg;
-                    arq_chaves = optarg;
                     break;
                 case 'm':
                     msg_input = optarg;
@@ -52,13 +72,37 @@ int main(int argc, char **argv) {
                     USAGE_EXIT(1);
             }
 
-        printf("A mensagem que voce quer codificar está no arquivo %s.\n", msg_input);
-        printf("A mensagem codificada sairá no arquivo %s.\n", msg_output);
-        printf("O livro que usaremos para codificar a mensagem é %s.\n", livro_cifra);
-        if (exportar_chaves)    
-            printf("Você escolheu exportar as chaves de cifra utilizadas. Elas sairão no arquivo %s.\n", arq_chaves);
-        else
-            printf("Você escolheu não exportar as chaves de cifra utilizadas.\n");
+        erro = cria_chaves(livro_cifra, lista_de_chaves);
+        if (erro) {
+            if (erro == 1)
+                MEM_ERR_EXIT(erro);
+            if (erro == 2)
+                FOPEN_ERR_EXIT(erro, livro_cifra);
+        }
+        
+        erro = codifica_msg(livro_cifra, msg_input, msg_output);
+        if (erro) {
+            switch (erro) {
+                case 1:
+                    MEM_ERR_EXIT(erro);
+                    break;
+                case 2:
+                    FOPEN_ERR_EXIT(erro, livro_cifra);
+                    break;
+                case 3: 
+                    FOPEN_ERR_EXIT(erro, msg_input);
+                    break;
+                case 4:
+                    FEXISTS_EXIT(erro, msg_output);
+                    break;
+            }
+        }
+
+        if (exportar_chaves) {
+            erro = exporta_chaves(arq_chaves, lista_de_chaves);
+            if (erro)
+                FOPEN_ERR_EXIT(erro, arq_chaves);
+        }
 
     } else if (c == 'd') {
         while ((c = getopt(argc, argv, "i:c:b:o:")) != -1)
@@ -89,6 +133,8 @@ int main(int argc, char **argv) {
 
     } else
         USAGE_EXIT(1);
+
+    lista_de_chaves = destroi_l_lista(lista_de_chaves);
 
     return 0;
 }
