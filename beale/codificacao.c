@@ -5,7 +5,9 @@
 #include "codificacao.h"
 
 int codifica_msg(char *livro_cifra, char *original, char *codificada) {
-    L_lista *chaves = NULL;
+    L_lista *chaves = cria_l_lista();
+    if (!chaves)
+        return 0;
     int e = cria_chaves(livro_cifra, chaves);
     if (e != 0)
         return e;
@@ -25,7 +27,7 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada) {
     int *r;
     char c = fgetc(in);
     while (c != EOF) {
-        if (33 <= c && c <= 126) {
+        if (32 <= c && c <= 126) {
             if (c == ' ')
                 fprintf(out, "-1 ");
             else {
@@ -34,8 +36,8 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada) {
                 
                 atual = elem_chave_l_lista(chaves, c);
                 if (!atual) {
-                    fprintf(stderr, "socorro a lista que eu quero ver nao existe\n");
-                    exit(1);
+                    c = fgetc(in);
+                    continue;
                 }
                 r = rand_l_int(atual);
                 fprintf(out, "%d ", *r);
@@ -43,9 +45,12 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada) {
         }
         c = fgetc(in);
     }
+    fprintf(out, "\n");
 
     fclose(in);
     fclose(out);
+
+    chaves = destroi_l_lista(chaves);
 
     return 0;
 }

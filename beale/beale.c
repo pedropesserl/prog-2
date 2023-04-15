@@ -34,22 +34,22 @@ int main(int argc, char **argv) {
     if (c == 'e') {
         while ((c = getopt(argc, argv, "b:m:o:c:")) != -1)
             switch (c) {
-            case 'b':
-                livro_cifra = optarg;
-                arq_chaves = optarg;
-                break;
-            case 'm':
-                msg_input = optarg;
-                break;
-            case 'o':
-                msg_output = optarg;
-                break;
-            case 'c':
-                exportar_chaves = 1;
-                arq_chaves = optarg;
-                break;
-            default:
-                USAGE_EXIT(1);
+                case 'b':
+                    livro_cifra = optarg;
+                    arq_chaves = optarg;
+                    break;
+                case 'm':
+                    msg_input = optarg;
+                    break;
+                case 'o':
+                    msg_output = optarg;
+                    break;
+                case 'c':
+                    exportar_chaves = 1;
+                    arq_chaves = optarg;
+                    break;
+                default:
+                    USAGE_EXIT(1);
             }
 
         printf("A mensagem que voce quer codificar está no arquivo %s.\n", msg_input);
@@ -63,21 +63,21 @@ int main(int argc, char **argv) {
     } else if (c == 'd') {
         while ((c = getopt(argc, argv, "i:c:b:o:")) != -1)
             switch (c) {
-            case 'i':
-                msg_input = optarg;
-                break;
-            case 'c':
-                decodificar_com_chaves = 1;
-                arq_chaves = optarg;
-                break;
-            case 'b':
-                livro_cifra = optarg;
-                break;
-            case 'o':
-                msg_output = optarg;
-                break;
-            default:
-                USAGE_EXIT(1);
+                case 'i':
+                    msg_input = optarg;
+                    break;
+                case 'c':
+                    decodificar_com_chaves = 1;
+                    arq_chaves = optarg;
+                    break;
+                case 'b':
+                    livro_cifra = optarg;
+                    break;
+                case 'o':
+                    msg_output = optarg;
+                    break;
+                default:
+                    USAGE_EXIT(1);
             }
 
         printf("A mensagem que você quer decodificar está no arquivo %s.\n", msg_input);

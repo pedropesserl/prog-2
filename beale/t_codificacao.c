@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "codificacao.h"
 
 int main(int argc, char **argv) {
-    srand(0);
+    srand(time(0));
 
     if (argc != 4) {
         fprintf(stderr, "Uso: %s <livro_cifra> <msg_original> <msg_codificada>\n", argv[0]);
@@ -14,7 +15,11 @@ int main(int argc, char **argv) {
     char *msg_original = argv[2];
     char *msg_codificada = argv[3];
     
-    codifica_msg(livro_cifra, msg_original, msg_codificada);
+    int e = codifica_msg(livro_cifra, msg_original, msg_codificada);
+    if (e != 0) {
+        fprintf(stderr, "erro na função codifica_msg() (código: %d)\n", e);
+        exit(e);
+    }
     
     return 0;
 }
