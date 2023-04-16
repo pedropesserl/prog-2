@@ -26,11 +26,11 @@ t_chaves: t_chaves.o chaves.o lista.o
 t_codificacao: t_codificacao.o codificacao.o chaves.o lista.o
 	gcc -o t_codificacao t_codificacao.o codificacao.o chaves.o lista.o
 
-t_decodificacao: t_decodificacao.o decodificacao.o
-	gcc -o t_decodificacao t_decodificacao.o decodificacao.o
+t_decodificacao: t_decodificacao.o decodificacao.o chaves.o lista.o
+	gcc -o t_decodificacao t_decodificacao.o decodificacao.o chaves.o lista.o
 
 clean:
 	rm *.o
 
 purge:
-	rm *.o beale t_chaves t_codificacao t_decodificacao t_lista
+	rm *.o beale t_chaves t_codificacao t_decodificacao

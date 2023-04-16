@@ -4,16 +4,16 @@
 
 int main(int argc, char **argv) {
     if (argc != 3) {
-        fprintf(stderr, "Uso: ./t_chaves <livro_cifra> <output>\n");
+        fprintf(stderr, "Uso: %s <arq_chaves> <output>\n", argv[0]);
         exit(1);
     }
 
-    char *livro_cifra = argv[1];
+    char *arq_chaves = argv[1];
     char *output = argv[2];
 
     L_lista *chaves = cria_l_lista();
 
-    if (cria_chaves(livro_cifra, chaves) != 0) {
+    if (arq_cria_chaves(arq_chaves, chaves) != 0) {
         fprintf(stderr, "AAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
         exit(1);
     }

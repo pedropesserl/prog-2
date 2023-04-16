@@ -15,11 +15,15 @@ int main(int argc, char **argv) {
     char *msg_original = argv[2];
     char *msg_codificada = argv[3];
     
-    int e = codifica_msg(livro_cifra, msg_original, msg_codificada);
+    L_lista *lista_de_chaves = cria_l_lista();
+
+    int e = codifica_msg(livro_cifra, msg_original, msg_codificada, lista_de_chaves);
     if (e != 0) {
         fprintf(stderr, "erro na função codifica_msg() (código: %d)\n", e);
         exit(e);
     }
     
+    lista_de_chaves = destroi_l_lista(lista_de_chaves);
+
     return 0;
 }

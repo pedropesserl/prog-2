@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "lista.h"
 
 L_int *cria_l_int() {
@@ -102,6 +103,18 @@ int *elem_l_int(L_int *lista, size_t pos) {
     return &no->elem;
 }
 
+int pertence_l_int(L_int *lista, int elem) {
+    No_int *no = lista->ini;
+
+    while (no) {
+        if (no->elem == elem)
+            return 1;
+        no = no->prox;
+    }
+
+    return 0;
+}
+
 void imprime_l_int(L_int *lista) {
     if (l_int_vazia(lista))
         return;
@@ -165,7 +178,12 @@ int insere_l_lista_ini(L_lista *lista, char chave, L_int *elem) {
     if (!novo)
         return 0;
 
-    novo->elem = elem;
+    L_int *n_elem = (L_int*)calloc(1, sizeof(L_int));
+    if (!n_elem)
+        return 0;
+    memcpy(n_elem, elem, sizeof(L_int));
+
+    novo->elem = n_elem;
     novo->chave = chave;
     novo->prox = lista->ini;
     lista->ini = novo;
@@ -180,23 +198,33 @@ int insere_l_lista_ord(L_lista *lista, char chave, L_int *elem) {
     if (!novo)
         return 0;
 
-    novo->elem = elem;
+    No_int *int_aux = elem->ini;
+
+    L_int *n_elem = cria_l_int();
+    if (!n_elem)
+        return 0;
+    for (size_t i = 0; i < tamanho_l_int(elem); i++) {
+        insere_l_int_ini(n_elem, int_aux->elem);
+        int_aux = int_aux->prox;
+    }
+
+    novo->elem = n_elem;
     novo->chave = chave;
 
     No_lista *atual = lista->ini;
-    No_lista *aux = NULL;
+    No_lista *lista_aux = NULL;
 
     while (atual && (int)atual->chave < (int)novo->chave) {
-        aux = atual;
+        lista_aux = atual;
         atual = atual->prox;
     }
 
-    if (!aux) {
+    if (!lista_aux) {
         novo->prox = lista->ini;
         lista->ini = novo;
     } else {
         novo->prox = atual;
-        aux->prox = novo;
+        lista_aux->prox = novo;
     }
 
     (lista->tamanho)++;
@@ -213,6 +241,21 @@ L_int *elem_l_lista(L_lista *lista, size_t pos) {
         no = no->prox;
 
     return no->elem;
+}
+
+int busca_l_lista(L_lista *lista, char chave) {
+    No_lista *no = lista->ini;
+    
+    int i = 0;
+    
+    while (no) {
+        if (no->chave == chave)
+            return i;
+        no = no->prox;
+        i++;
+    }
+
+    return -1;
 }
 
 char chave_l_lista(L_lista *lista, size_t pos) {
@@ -238,6 +281,23 @@ L_int *elem_chave_l_lista(L_lista *lista, char chave) {
     return NULL;
 }
 
+char chave_elem_l_lista(L_lista *lista, int elem) {
+    char c = '\0';
+
+    No_lista *no = lista->ini;
+    L_int *l = NULL;
+    
+    while (no) {
+        l = no->elem;
+        c = no->chave;
+        if (pertence_l_int(l, elem))
+            return c;
+        no = no->prox;
+    }
+
+    return c;
+}
+
 void imprime_l_lista(L_lista *lista) {
     if (l_lista_vazia(lista))
         return;
@@ -260,7 +320,10 @@ void f_imprime_l_lista(FILE *stream, L_lista *lista) {
     No_lista *no = lista->ini;
     for (size_t i = 0; i < tamanho_l_lista(lista); i++) {
         fprintf(stream, "%c: ", no->chave);
-        f_imprime_l_int(stream, no->elem);
+        if (l_int_vazia(no->elem))
+            printf("\n");
+        else
+            f_imprime_l_int(stream, no->elem);
         no = no->prox;
     }
 }

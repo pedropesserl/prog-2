@@ -24,7 +24,7 @@
     } while (0)
 
 #define FEXISTS_EXIT(err, filename) do {                                        \
-        fprintf(stderr, "Erro: o arquivo %s já existe.", filename);             \
+        fprintf(stderr, "Erro: o arquivo %s já existe.\n", filename);           \
         exit(err);                                                              \
     } while (0);
 
@@ -72,16 +72,8 @@ int main(int argc, char **argv) {
                     USAGE_EXIT(1);
             }
 
-        erro = cria_chaves(livro_cifra, lista_de_chaves);
-        if (erro) {
-            if (erro == 1)
-                MEM_ERR_EXIT(erro);
-            if (erro == 2)
-                FOPEN_ERR_EXIT(erro, livro_cifra);
-        }
-        
-        erro = codifica_msg(livro_cifra, msg_input, msg_output);
-        if (erro) {
+        erro = codifica_msg(livro_cifra, msg_input, msg_output, lista_de_chaves);
+        if (erro)
             switch (erro) {
                 case 1:
                     MEM_ERR_EXIT(erro);
@@ -96,7 +88,6 @@ int main(int argc, char **argv) {
                     FEXISTS_EXIT(erro, msg_output);
                     break;
             }
-        }
 
         if (exportar_chaves) {
             erro = exporta_chaves(arq_chaves, lista_de_chaves);
@@ -124,12 +115,42 @@ int main(int argc, char **argv) {
                     USAGE_EXIT(1);
             }
 
-        printf("A mensagem que você quer decodificar está no arquivo %s.\n", msg_input);
-        printf("A mensagem decodificada sairá no arquivo %s.\n", msg_output);
-        if (decodificar_com_chaves)
-            printf("Você escolheu decodificar com um arquivo de chaves. Usaremos o arquivo %s.\n", arq_chaves);
-        else
-            printf("Você escolheu decodificar com um livro-cifra. Usaremos o livro %s.\n", livro_cifra);
+        if (decodificar_com_chaves) {
+            erro = decodifica_com_chaves(arq_chaves, msg_input, msg_output, lista_de_chaves);
+            if (erro)
+                switch (erro) {
+                    case 1:
+                        MEM_ERR_EXIT(erro);
+                        break;
+                    case 2:
+                        FOPEN_ERR_EXIT(erro, arq_chaves);
+                        break;
+                    case 3: 
+                        FOPEN_ERR_EXIT(erro, msg_input);
+                        break;
+                    case 4:
+                        FEXISTS_EXIT(erro, msg_output);
+                        break;
+                }
+        } else {
+            erro = decodifica_com_livro(livro_cifra, msg_input, msg_output, lista_de_chaves);
+            if (erro)
+                switch (erro) {
+                    case 1:
+                        MEM_ERR_EXIT(erro);
+                        break;
+                    case 2:
+                        FOPEN_ERR_EXIT(erro, livro_cifra);
+                        break;
+                    case 3: 
+                        FOPEN_ERR_EXIT(erro, msg_input);
+                        break;
+                    case 4:
+                        FEXISTS_EXIT(erro, msg_output);
+                        break;
+                }
+
+        }
 
     } else
         USAGE_EXIT(1);
