@@ -14,7 +14,7 @@ int decodifica(char *original, char *decodificada, L_lista *chaves) {
     }
     out = fopen(decodificada, "w");
     if (!out)
-        return 4;
+        return 5;
 
     char chave = '\0';
     int valor;

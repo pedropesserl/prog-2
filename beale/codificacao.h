@@ -8,7 +8,8 @@
  * a lista de chaves gerada no processo. Se houver erro de alocação
  * de memória, retorna 1. Se houver erro ao abrir o arquivo em livro_cifra,
  * retorna 2. Se houver erro ao abrir o arquivo em original, retorna 3.
- * Se o arquivo codificada já existir, retorna 4.                             */
+ * Se o arquivo codificada já existir, retorna 4. Se houver erro ao abrir o
+ * arquivo codificada, retorna 5. CC, retorna 0.                              */
 int codifica_msg(char *livro_cifra, char *original, char *codificada, L_lista *chaves);
 
 #endif /* CODIFICACAO_H_ */

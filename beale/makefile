@@ -24,4 +24,4 @@ clean:
 	rm *.o
 
 purge:
-	rm *.o beale t_chaves t_codificacao t_decodificacao
+	rm *.o beale

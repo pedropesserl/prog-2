@@ -22,7 +22,7 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada, L_lista *c
     }
     out = fopen(codificada, "w");
     if (!out)
-        return 4;
+        return 5;
 
     L_int *atual;
     int *r;

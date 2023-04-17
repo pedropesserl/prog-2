@@ -5,8 +5,8 @@
 /* Insere um valor acompanhado de uma chave na lista de listas. Se a lista
  * correspondente à chave inserida já existir, insere o valor nessa lista.
  * Se não, cria uma lista de inteiros com a chave nova.
- * Se houver erro de alocação de memória, retorna 0. CC, retorna 1.           */
-int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
+ * Se houver erro de alocação de memória, retorna 1. CC, retorna 0.           */
+static int insere_valor_com_chave(L_lista *chaves, char chave, int valor) {
     L_int *lista_de_valores = NULL;
     
     int i;
@@ -103,6 +103,8 @@ int exporta_chaves(char *output, L_lista *chaves) {
         return 2;
     
     f_imprime_l_lista(arq, chaves);
+
+    fclose(arq);
 
     return 0;
 }

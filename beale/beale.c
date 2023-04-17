@@ -87,12 +87,21 @@ int main(int argc, char **argv) {
                 case 4:
                     FEXISTS_EXIT(erro, msg_output);
                     break;
+                case 5:
+                    FOPEN_ERR_EXIT(erro, msg_output);
             }
 
         if (exportar_chaves) {
             erro = exporta_chaves(arq_chaves, lista_de_chaves);
             if (erro)
-                FOPEN_ERR_EXIT(erro, arq_chaves);
+                switch (erro) {
+                    case 2:
+                        FOPEN_ERR_EXIT(erro, arq_chaves);
+                        break;
+                    case 4:
+                        FEXISTS_EXIT(erro, arq_chaves);
+                        break;
+                }
         }
 
     } else if (c == 'd') {
@@ -131,6 +140,9 @@ int main(int argc, char **argv) {
                     case 4:
                         FEXISTS_EXIT(erro, msg_output);
                         break;
+                    case 5:
+                        FOPEN_ERR_EXIT(erro, msg_output);
+                        break;
                 }
         } else {
             erro = decodifica_com_livro(livro_cifra, msg_input, msg_output, lista_de_chaves);
@@ -147,6 +159,9 @@ int main(int argc, char **argv) {
                         break;
                     case 4:
                         FEXISTS_EXIT(erro, msg_output);
+                        break;
+                    case 5:
+                        FOPEN_ERR_EXIT(erro, msg_output);
                         break;
                 }
 
