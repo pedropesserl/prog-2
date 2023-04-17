@@ -5,29 +5,20 @@ all: beale t_chaves t_codificacao t_decodificacao
 beale: beale.o chaves.o codificacao.o decodificacao.o lista.o
 	gcc -o beale beale.o chaves.o codificacao.o decodificacao.o lista.o
 
-beale.o: beale.c
+beale.o: beale.c chaves.h codificacao.h decodificacao.h 
 	gcc -c beale.c $(CFLAGS)
 
-chaves.o: chaves.c
+chaves.o: chaves.c chaves.h
 	gcc -c chaves.c $(CFLAGS)
 
-codificacao.o: codificacao.c
+codificacao.o: codificacao.c codificacao.h
 	gcc -c codificacao.c $(CFLAGS)
 
-decodificacao.o: decodificacao.c
+decodificacao.o: decodificacao.c decodificacao.h
 	gcc -c decodificacao.c $(CFLAGS)
 
-lista.o: lista.c
+lista.o: lista.c lista.h
 	gcc -c lista.c $(CFLAGS)
-
-t_chaves: t_chaves.o chaves.o lista.o
-	gcc -o t_chaves t_chaves.o chaves.o lista.o
-
-t_codificacao: t_codificacao.o codificacao.o chaves.o lista.o
-	gcc -o t_codificacao t_codificacao.o codificacao.o chaves.o lista.o
-
-t_decodificacao: t_decodificacao.o decodificacao.o chaves.o lista.o
-	gcc -o t_decodificacao t_decodificacao.o decodificacao.o chaves.o lista.o
 
 clean:
 	rm *.o
