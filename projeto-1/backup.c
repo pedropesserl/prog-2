@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
         FOPEN_ERR_EXIT(1, backup);
 
     unsigned int n_registros = 0;
-    fread(&n_registros, 1, sizeof(unsigned int), bin);
+    fread(&n_registros, sizeof(unsigned int), 1, bin);
 
     struct reg *registros = le_vetor_registros(bin, n_registros);
     if (!registros)
@@ -98,10 +98,9 @@ int main(int argc, char **argv) {
     FILE *out;
 
     if (flag_t) {
-        for (unsigned int i = 0; i < n_registros; i++) {
-            printf("Arquivos armazenados em %s:\n", backup);
-            printf("%s\n", registros[i].nome);
-        }
+        printf("Arquivos armazenados em %s:\n", backup);
+        for (unsigned int i = 0; i < n_registros; i++)
+            printf("Nome: %s Tamanho: %ld\n", registros[i].nome, registros[i].tam_conteudo);
 
         return 0;
     } else {

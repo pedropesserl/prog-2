@@ -24,4 +24,4 @@ clean:
 	rm *.o
 
 purge:
-	rm *.o beale
+	rm *.o beale *.txt
