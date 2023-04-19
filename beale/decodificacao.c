@@ -21,12 +21,13 @@ int decodifica(char *original, char *decodificada, L_lista *chaves) {
     while (fscanf(in, "%d", &valor) != EOF) {
         if (valor == -1)
             fputc(' ', out);
+        else if (valor == -3)
+            fputc('\n', out);
         else {
             chave = chave_elem_l_lista(chaves, valor);
             fputc(chave, out);
         }
     }
-    fputc('\n', out);
 
     fclose(in);
     fclose(out);

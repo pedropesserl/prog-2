@@ -21,7 +21,7 @@ lista.o: lista.c lista.h
 	gcc -c lista.c $(CFLAGS)
 
 clean:
-	rm *.o
+	-rm *.o
 
 purge:
-	rm *.o beale *.txt
+	-rm *.o beale *.txt

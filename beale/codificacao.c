@@ -28,21 +28,21 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada, L_lista *c
     int *r;
     char c = fgetc(in);
     while (c != EOF) {
-        if (32 <= c && c <= 126) {
-            if (c == ' ')
-                fprintf(out, "-1 ");
-            else {
-                if ('A' <= c && c <= 'Z')
-                    c += 32;
-                
-                atual = elem_chave_l_lista(chaves, c);
-                if (!atual) {
-                    c = fgetc(in);
-                    continue;
-                }
-                r = rand_l_int(atual);
-                fprintf(out, "%d ", *r);
+        if (c == '\n')
+            fprintf(out, "-3 ");
+        else if (c == ' ')
+            fprintf(out, "-1 ");
+        else if (33 <= c && c <= 126) {
+            if ('A' <= c && c <= 'Z')
+                c += 32;
+
+            atual = elem_chave_l_lista(chaves, c);
+            if (!atual) {
+                c = fgetc(in);
+                continue;
             }
+            r = rand_l_int(atual);
+            fprintf(out, "%d ", *r);
         }
         c = fgetc(in);
     }
