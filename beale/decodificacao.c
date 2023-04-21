@@ -2,7 +2,7 @@
 #include "chaves.h"
 #include "decodificacao.h"
 
-int decodifica(char *original, char *decodificada, L_lista *chaves) {
+static int decodifica(char *original, char *decodificada, L_lista *chaves) {
     FILE *in = fopen(original, "r");
     if (!in)
         return 3;
