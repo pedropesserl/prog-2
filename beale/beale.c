@@ -24,7 +24,8 @@
     } while (0)
 
 #define FEXISTS_EXIT(err, filename) do {                                        \
-        fprintf(stderr, "Erro: o arquivo %s já existe.\n", filename);           \
+        fprintf(stderr, "Erro: o arquivo %s já existe. ", filename);            \
+        fprintf(stderr, "Não é possível sobrescrevê-lo.\n");                    \
         exit(err);                                                              \
     } while (0);
 

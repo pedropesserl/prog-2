@@ -17,12 +17,15 @@ int codifica_msg(char *livro_cifra, char *original, char *codificada, L_lista *c
 
     FILE *out = fopen(codificada, "r");
     if (out) {
+        fclose(in);
         fclose(out);
         return 4;
     }
     out = fopen(codificada, "w");
-    if (!out)
+    if (!out) {
+        fclose(in);
         return 5;
+    }
 
     L_int *atual;
     int *r;

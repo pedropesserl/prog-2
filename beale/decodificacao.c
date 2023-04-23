@@ -9,12 +9,15 @@ static int decodifica(char *original, char *decodificada, L_lista *chaves) {
 
     FILE *out = fopen(decodificada, "r");
     if (out) {
+        fclose(in);
         fclose(out);
         return 4;
     }
     out = fopen(decodificada, "w");
-    if (!out)
+    if (!out) {
+        fclose(in);
         return 5;
+    }
 
     char chave = '\0';
     int valor;

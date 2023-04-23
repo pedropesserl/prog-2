@@ -34,8 +34,10 @@ int arq_cria_chaves(char *arq_chaves, L_lista *chaves) {
         return 2;
 
     char *buffer = (char*)calloc(MAX_WRD_LEN, sizeof(char));
-    if (!buffer)
+    if (!buffer) {
+        fclose(arq);
         return 1;
+    }
 
     L_int *lista_de_valores = NULL;
 
@@ -46,22 +48,29 @@ int arq_cria_chaves(char *arq_chaves, L_lista *chaves) {
         c = buffer[0];
 
         lista_de_valores = cria_l_int();
-        if (!lista_de_valores)
+        if (!lista_de_valores) {
+            fclose(arq);
             return 1;
+        }
 
         int valor;
         while (fscanf(arq, "%s", buffer) != EOF && buffer[1] != ':') {
             sscanf(buffer, "%d", &valor);
-            if (!insere_l_int_ini(lista_de_valores, valor))
+            if (!insere_l_int_ini(lista_de_valores, valor)) {
+                fclose(arq);
                 return 1;
+            }
         }
         
-        if (!insere_l_lista_ord(chaves, c, lista_de_valores))
+        if (!insere_l_lista_ord(chaves, c, lista_de_valores)) {
+            fclose(arq);
             return 1;
+        }
         lista_de_valores = destroi_l_int(lista_de_valores);
     }
 
     free(buffer);
+    fclose(arq);
 
     return 0;
 }
@@ -79,13 +88,14 @@ int livro_cria_chaves(char *livro_cifra, L_lista *chaves) {
         if (33 <= c && c <= 126) {
             if ('A' <= c && c <= 'Z')
                 c += 32;
-            if (insere_valor_com_chave(chaves, c, i++) != 0)
+            if (insere_valor_com_chave(chaves, c, i++) != 0) {
+                fclose(arq);
                 return 1;
+            }
         }
     }
 
     free(buffer);
-
     fclose(arq);
     
     return 0;
@@ -97,7 +107,6 @@ int exporta_chaves(char *output, L_lista *chaves) {
         fclose(arq);
         return 4;
     }
-
     arq = fopen(output, "w");
     if (!arq)
         return 2;
