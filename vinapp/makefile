@@ -1,12 +1,14 @@
 CFLAGS = -Wall -Wextra
+OBJ = vinapp.o
+DEPS =
 
-all: vinapp
+%.o: %.c $(DEPS)
+	gcc -c -o $@ $< $(CFLAGS)
 
-vinapp: vinapp.o
-	gcc $(CFLAGS) -o vina++ vinapp.o
+all: vina++
 
-vinapp.o: vinapp.c
-	gcc -c vinapp.c
+vina++: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS)
 
 clean:
-	rm -rf *.o vina++
+	rm -f $(OBJ) vina++
