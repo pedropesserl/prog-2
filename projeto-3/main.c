@@ -8,7 +8,7 @@
 typedef enum { NOP, ENCODE, DECODE } Modo_t;
 
 struct RLE {
-    char byte;
+    uchar byte;
     uchar freq;
 };
 
@@ -108,22 +108,19 @@ void Encode(char *fIn, char *fOut) {
     struct RLE *regvec = (struct RLE*)malloc(BUFFER_SIZE);
     uchar byte;
     fread(&byte, 1, 1, input);
-    size_t bytes_lidos = 1;
-    while (!feof(input)) {
+    do {
         int i = 0;
         do {
             regvec[i].byte = byte;
+            regvec[i].freq = 0;
             do {
                 regvec[i].freq++;
                 fread(&byte, 1, 1, input);
-                bytes_lidos++;
-            } while (byte == regvec[i].byte && !feof(input));
+            } while (!feof(input) && regvec[i].freq < 255 && byte == regvec[i].byte);
             i++;
-        } while (i < 5 && !feof(input));
-        fwrite(regvec, 1, bytes_lidos, output);
-        fread(&byte, 1, 1, input);
-        bytes_lidos = 1;
-    }
+        } while (!feof(input) && i < 5);
+        fwrite(regvec, 2, i, output);
+    } while (!feof(input));
 
     free(regvec);
     fclose(input);
@@ -148,16 +145,17 @@ void Decode(char *fIn, char *fOut) {
     struct RLE *regvec = (struct RLE*)malloc(BUFFER_SIZE);
     do {
         int i = 0;
-        int reg_lidos = 0;
         do {
             fread(&(regvec[i].byte), 1, 1, input);
+            if (feof(input))
+                break;
             fread(&(regvec[i].freq), 1, 1, input);
-            reg_lidos++;
             i++;
-        } while (i < 5 && !feof(input));
-        for (int i = 0; i <= reg_lidos; i++)
-            for (int j = 0; j < regvec[i].freq; i++)
-                fwrite(&(regvec[i].byte), 1, 1, output);
+        } while (!feof(input) && i < 5);
+
+        for (int j = 0; j < i; j++)
+            for (int k = 0; k < regvec[j].freq; k++)
+                fwrite(&(regvec[j].byte), 1, 1, output);
     } while (!feof(input));
 
     free(regvec);
