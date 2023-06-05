@@ -2,11 +2,11 @@ CFLAGS = -Wall -Wextra -g
 
 all: rle
 
-rle: main.o
-	gcc -o rle main.o
+rle: rle.o
+	gcc -o rle rle.o
 
-main.o: main.c
-	gcc -c main.c $(CFLAGS)
+rle.o: rle.c
+	gcc -c rle.c $(CFLAGS)
 
 clean:
 	rm -f *.o
