@@ -8,6 +8,6 @@ struct File_info {
 };
 
 // lê a área de diretório do archive e retorna as informações sobre os arquivos.
-struct Dir *le_dir(FILE *archive);
+struct File_info *le_dir(FILE *archive);
 
 #endif // ARCHIVER_H_
