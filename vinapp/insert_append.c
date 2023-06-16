@@ -29,12 +29,12 @@ static void insert(FILE *archive, char *member_name) {
         dir = read_dir(archive, &dirnmemb);
     }
 
-    if (get_ord(dir, dirnmemb, member_name) == 0) { // arquivo novo
+    int is_new_member = get_ord(dir, dirnmemb, member_name) == 0;
+    if (is_new_member) {
         dir = reallocarray(dir, ++dirnmemb, sizeof(struct File_info));
         if (!dir)
             MEM_ERR(1);
     }
-    size_t file_ord = dirnmemb;
 
     FILE *member = fopen(member_name, "rb");
     if (!member)
@@ -52,26 +52,24 @@ static void insert(FILE *archive, char *member_name) {
     };
     
     uchar buffer[BUFFERSIZE];
-    if (file_ord == dirnmemb) { // arquivo vai para o fim do archive
-        fseek(archive, dir[dirnmemb-1].pos ,SEEK_SET);
-        
-        size_t bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-        while (!feof(member)) {
-            fwrite(buffer, 1, bytes_read, archive);
-            bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-        }
-        if (bytes_read) // leu até o fim, mas ainda sobraram bytes
-            fwrite(buffer, 1, bytes_read, archive);
+    if (!is_new_member)
+        remove(/* arquivo repetido */);
 
-        // reescreve o diretório no fim do archive, e sua nova posição no início
-        fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
-        rewind(archive);
-        size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
-        fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
-    } else { // arquivo sobrescreve um de mesmo nome no meio do archive
-        fprintf(stderr, "insert: não implementada\n");
-        exit(1);
+    fseek(archive, dir[dirnmemb-1].pos ,SEEK_SET);
+
+    size_t bytes_read = fread(buffer, 1, BUFFERSIZE, member);
+    while (!feof(member)) {
+        fwrite(buffer, 1, bytes_read, archive);
+        bytes_read = fread(buffer, 1, BUFFERSIZE, member);
     }
+    if (bytes_read) // leu até o fim, mas ainda sobraram bytes
+        fwrite(buffer, 1, bytes_read, archive);
+
+    // reescreve o diretório no fim do archive, e sua nova posição no início
+    fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
+    rewind(archive);
+    size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
+    fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
 }
 
 void insert_in_archive(char *archive_path, int nmemb, char **membv) {
