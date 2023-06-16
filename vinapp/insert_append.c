@@ -1,5 +1,5 @@
 #include "archiver.h"
-#include "insert.h"
+#include "insert_append.h"
 
 // Se o nome de um arquivo não tiver caminho relativo, padroniza para que tenha.
 static void standardize_members(size_t nmemb, char **membv) {
@@ -29,26 +29,26 @@ static void insert(FILE *archive, char *member_name) {
         dir = read_dir(archive, &dirnmemb);
     }
 
-    dir = reallocarray(dir, ++dirnmemb, sizeof(struct File_info));
-    if (!dir)
-        MEM_ERR(1);
+    if (get_ord(dir, dirnmemb, member_name) == 0) { // arquivo novo
+        dir = reallocarray(dir, ++dirnmemb, sizeof(struct File_info));
+        if (!dir)
+            MEM_ERR(1);
+    }
+    size_t file_ord = dirnmemb;
 
     FILE *member = fopen(member_name, "rb");
     if (!member)
         FDNE_ERR(3, member_name);
 
-    size_t file_ord = get_ord(dir, dirnmemb, member_name) != 0
-        ? get_ord(dir, dirnmemb, member_name) : dirnmemb;
-
-    dir[file_ord-1] = (struct File_info){
+    dir[dirnmemb-1] = (struct File_info){
         .name = member_name,
         .uid = get_uid(member),
         .gid = get_gid(member),
         .perms = get_perms(member),
         .td = get_td_f(),
         .size = get_size(member),
-        .ord = file_ord
-        .pos = get_curr_pos(dir, file_ord)
+        .ord = dirnmemb,
+        .pos = get_curr_pos(dir, dirnmemb)
     };
     
     uchar buffer[BUFFERSIZE];
