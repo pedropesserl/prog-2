@@ -3,13 +3,14 @@
 /* #include <unistd.h> */
 #include "libbin.h"
 
-FILE *ME_read_and_write(const char *path) {
-    FILE *file = fopen(path, "rb");
-    if (!file)
-        FDNE_ERR(3);
-    fclose(file);
-    file = fopen(path, "rb+");
-    if (!file)
-        FOPEN_ERR(2);
-    return file;
+size_t get_size(FILE *f) {
+    fseek(f, 0, SEEK_END);
+    size_t sz = ftell(archive);
+    rewind(archive);
+    return sz;
+}
+
+void open_space(FILE *f, size_t space, size_t pos) {
+    fprintf(stderr, "open_space: não implementada\n");
+    exit(1);
 }

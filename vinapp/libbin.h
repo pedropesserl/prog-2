@@ -5,6 +5,8 @@
 #include <stdlib.h>
 
 #define uchar unsigned char
+#define MAX_FNAME_LEN 4096 // número máximo de caracteres no nome de um
+                           // arquivo e seu caminho no Linux
 
 #define MEM_ERR(err) do {                                                           \
         fprintf(stderr, "[libbin] Erro na alocação de memória.\n");                 \
@@ -27,8 +29,10 @@
         exit(err);                                                                  \
     } while (0);
 
-// Abre um arquivo para leitura e escrita. O arquivo deve existir.
-// Em casos de erro, termina o programa.
-FILE *ME_read_and_write(const char *path);
+// Rebobina o arquivo f e retorna o seu tamanho em bytes.
+size_t get_size(FILE *f);
+
+// Abre um espaço de space bytes no arquivo f, a partir da posição pos.
+void open_space(FILE *f, size_t space, size_t pos);
 
 #endif // BIN_FILES_H_
