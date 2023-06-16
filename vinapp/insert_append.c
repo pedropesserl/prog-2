@@ -57,13 +57,20 @@ static void insert(FILE *archive, char *member_name) {
 
     fseek(archive, dir[dirnmemb-1].pos ,SEEK_SET);
 
-    size_t bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-    while (!feof(member)) {
-        fwrite(buffer, 1, bytes_read, archive);
+    size_t bytes_read /*= fread(buffer, 1, BUFFERSIZE, member)*/;
+    /* while (!feof(member)) { */
+    /*     fwrite(buffer, 1, bytes_read, archive); */
+    /*     bytes_read = fread(buffer, 1, BUFFERSIZE, member); */
+    /* } */
+    /* if (bytes_read) // leu até o fim, mas ainda sobraram bytes */
+    /*     fwrite(buffer, 1, bytes_read, archive); */
+    // ^
+    // | testar se essas duas implementações são equivalentes
+    // v
+    do {
         bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-    }
-    if (bytes_read) // leu até o fim, mas ainda sobraram bytes
         fwrite(buffer, 1, bytes_read, archive);
+    } while (!feof(member))
 
     // reescreve o diretório no fim do archive, e sua nova posição no início
     fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
