@@ -20,7 +20,7 @@ static void standardize_members(size_t nmemb, char **membv) {
 
 static void insert(FILE *archive, char *member_name) {
     struct File_info *dir = NULL;
-    size_t dirnmemb = 0;
+    size_t dirnmemb = 1;
     if (get_size(archive) == 0) {
         dir = calloc(1, sizeof(struct File_info));
         if (!dir)
@@ -40,43 +40,49 @@ static void insert(FILE *archive, char *member_name) {
     if (!member)
         FDNE_ERR(3, member_name);
 
-    dir[dirnmemb-1] = (struct File_info){
+    size_t file_ord = get_ord(dir, dirnmemb, member_name) != 0
+        ? get_ord(dir, dirnmemb, member_name) : dirnmemb;
+
+    dir[file_ord-1] = (struct File_info){
         .name = member_name,
         .uid = get_uid(member),
         .gid = get_gid(member),
         .perms = get_perms(member),
         .td = get_td_f(),
         .size = get_size(member),
-        .ord = dirnmemb,
-        .pos = get_curr_pos(dir, dirnmemb)
+        .ord = file_ord
+        .pos = get_curr_pos(dir, file_ord)
     };
-    
+
     uchar buffer[BUFFERSIZE];
-    if (!is_new_member)
-        remove(/* arquivo repetido */);
+    if (file_ord == dirnmemb) { // arquivo vai para o fim do archive
+        fseek(archive, dir[dirnmemb-1].pos ,SEEK_SET);
 
-    fseek(archive, dir[dirnmemb-1].pos ,SEEK_SET);
+        size_t bytes_read /*= fread(buffer, 1, BUFFERSIZE, member)*/;
+        /* size_t bytes_read = fread(buffer, 1, BUFFERSIZE, member); */
+        /* while (!feof(member)) { */
+        /*     fwrite(buffer, 1, bytes_read, archive); */
+        /*     bytes_read = fread(buffer, 1, BUFFERSIZE, member); */
+        /* } */
+        /* if (bytes_read) // leu até o fim, mas ainda sobraram bytes */
+        /*     fwrite(buffer, 1, bytes_read, archive); */
+        // ^
+        // | testar se essas duas implementações são equivalentes
+        // v
+        do {
+            bytes_read = fread(buffer, 1, BUFFERSIZE, member);
+            fwrite(buffer, 1, bytes_read, archive);
+        } while (!feof(member))
 
-    size_t bytes_read /*= fread(buffer, 1, BUFFERSIZE, member)*/;
-    /* while (!feof(member)) { */
-    /*     fwrite(buffer, 1, bytes_read, archive); */
-    /*     bytes_read = fread(buffer, 1, BUFFERSIZE, member); */
-    /* } */
-    /* if (bytes_read) // leu até o fim, mas ainda sobraram bytes */
-    /*     fwrite(buffer, 1, bytes_read, archive); */
-    // ^
-    // | testar se essas duas implementações são equivalentes
-    // v
-    do {
-        bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-        fwrite(buffer, 1, bytes_read, archive);
-    } while (!feof(member))
-
-    // reescreve o diretório no fim do archive, e sua nova posição no início
-    fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
-    rewind(archive);
-    size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
-    fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
+        // reescreve o diretório no fim do archive, e sua nova posição no início
+        fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
+        rewind(archive);
+        size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
+        fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
+    } else { // arquivo sobrescreve um de mesmo nome no meio do archive
+        fprintf(stderr, "insert: não implementada\n");
+        exit(1);
+    }
 }
 
 void insert_in_archive(char *archive_path, int nmemb, char **membv) {

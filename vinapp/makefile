@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra
-OBJ = vinapp.o
-DEPS =
+OBJ = vinapp.o libbin.o libarchive.o insert_append.o
+DEPS = libbin.h libarchive.h insert_append.h
 
 %.o: %.c $(DEPS)
 	gcc -c -o $@ $< $(CFLAGS)

@@ -1,4 +1,2 @@
 - libbin.c: implementar open_space()
-- implementar remove antes de terminar insert, para poder usar remove dentro do insert
-    (se tiver um arquivo duplicado, vou remover o arquivo e inserir o novo no final).
 - não esquecer de colocar os fontes no diretorio src e atualizar o makefile
