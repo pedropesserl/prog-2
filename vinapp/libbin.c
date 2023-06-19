@@ -7,13 +7,15 @@
 #endif
 
 size_t get_size(FILE *f) {
+    size_t curr_pos = ftell(f);
     fseek(f, 0, SEEK_END);
     size_t sz = ftell(f);
-    rewind(f);
+    fseek(f, curr_pos, SEEK_SET);
     return sz;
 }
 
 void open_space(FILE *f, size_t space, size_t pos) {
+    size_t curr_pos = ftell(f);
     uchar buffer[BUFFERSIZE] = {0};
     size_t btm = get_size(f) - pos + 1;
 
@@ -36,4 +38,16 @@ void open_space(FILE *f, size_t space, size_t pos) {
         fseek(f, -(remainder + i*BUFFERSIZE), SEEK_END);
         fwrite(buffer, 1, BUFFERSIZE, f);
     }
+
+    fseek(f, curr_pos, SEEK_SET);
+}
+
+void remove_space(FILE *f, size_t space, size_t pos) {
+    fprintf(stderr, "remove_space(): não implementada\n");
+    exit(1);
+
+    uchar buffer[BUFFERSIZE] = {0};
+
+    
+    rewind(f);
 }

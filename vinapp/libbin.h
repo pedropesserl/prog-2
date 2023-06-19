@@ -29,10 +29,15 @@
         exit(err);                                                                  \
     } while (0);
 
-// Rebobina o arquivo f e retorna o seu tamanho em bytes.
+// Retorna o tamanho do arquivo f em bytes.
 size_t get_size(FILE *f);
 
 // Abre um espaço de space bytes no arquivo f, a partir da posição pos.
+// Preenche o espaço com bytes nulos ou cópias dos bytes já existentes.
 void open_space(FILE *f, size_t space, size_t pos);
+
+// Remove um bloco de (no máximo) space bytes no arquivo f, a partir da posição
+// pos. Trunca o tamanho do arquivo e o rebobina.
+void remove_space(FILE *f, size_t space, size_t pos);
 
 #endif // BIN_FILES_H_
