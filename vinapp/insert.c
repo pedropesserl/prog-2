@@ -1,6 +1,6 @@
 #include <string.h>
 #include "libarchiver.h"
-#include "insert_append.h"
+#include "insert.h"
 
 // Se o nome de um arquivo não tiver caminho relativo, padroniza para que tenha.
 static void standardize_members(size_t nmemb, char **membv) {

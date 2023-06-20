@@ -1,79 +1,110 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
+#include <unistd.h>
+#include "libbin.h"
+#include "insert.h"
+#include "list.h"
 
-#define USAGE_EXIT(err) do {                                                      \
-    fprintf(stderr, "Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n",   \
-            argv[0]);                                                             \
-    fprintf(stderr, "Use %s -h para imprimir uma mensagem de ajuda.\n", argv[0]); \
-    exit(1);                                                                      \
+#define USAGE_EXIT(err) do {                                                    \
+    fprintf(stderr, "Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n", \
+            argv[0]);                                                           \
+    fprintf(stderr,                                                             \
+            "Use %s -h para imprimir uma mensagem de ajuda.\n", argv[0]);       \
+    exit(1);                                                                    \
 } while (0)
 
-int main(int argc, char **argv) {
-    
-    char *backup = NULL;
-    char *mvtarget = NULL;
-
-    opterr = 0;
-    char c = getopt(argc, argv, "iam:xrch");
-    switch (c) {
-    case 'i':
-        if (argc < 4) {
+char parse_options(int argc, char **argv) {
+    if (argc > 1 && argv[1][0] != '-') // o primeiro argumento precisa ser uma opção
+        USAGE_EXIT(1);
+    int optn;
+    char option, c;
+    while ((c = getopt(argc, argv, "iam:xrch")) != -1) {
+      option = c;
+      optn++;
+      switch (c) {
+        case 'i':
+          if (argc < 4) {
             fprintf(stderr, "Uso: %s -i <archive> <membro1> [membro2 [...]]\n",
                     argv[0]);
             exit(1);
-        }
-        break;
-
-    case 'a':
-        if (argc < 4) {
+          }
+          break;
+        case 'a':
+          if (argc < 4) {
             fprintf(stderr, "Uso: %s -a <archive> <membro1> [membro2 [...]]\n",
                     argv[0]);
             exit(1);
-        }
-        break;
-
-    case 'm':
-        if (argc != 5) {
+          }
+          break;
+        case 'm':
+          if (argc != 5) {
             fprintf(stderr, "Uso: %s -m <target> <archive> <membro>\n", argv[0]);
             exit(1);
-        }
-        mvtarget = optarg;
-        
-
-
-
-        break;
-
-    case 'x':
-        if (argc < 3) {
+          }
+          break;
+        case 'x':
+          if (argc < 3) {
             fprintf(stderr, "Uso: %s -x <archive> [membro1 [membro2 [...]]]\n",
                     argv[0]);
             exit(1);
-        }
-
-        break;
-
-    case 'r':
-        if (argc < 4) {
+          }
+          break;
+        case 'r':
+          if (argc < 4) {
             fprintf(stderr, "Uso: %s -r <archive> <membro1> [membro2 [...]]\n",
                     argv[0]);
             exit(1);
-        }
-
-        break;
-
-    case 'c':
-        if (argc != 3) {
+          }
+          break;
+        case 'c':
+          if (argc != 3) {
             fprintf(stderr, "Uso: %s -c <archive>\n", argv[0]);
             exit(1);
-        }
-        break;
+          }
+          break;
+        case 'h':
+          break;
+        default:
+          USAGE_EXIT(1);
+      }
+    }
+    if (optn != 1) // exatamente uma opção deve ser passada
+        USAGE_EXIT(1);
+    return option;
+}
 
+int main(int argc, char **argv) {
+    char *mvtarget = NULL;
+    char *archive_path = NULL;
+    opterr = 0;
+
+    char option = parse_options(argc, argv);
+
+    if (option == 'm')
+        archive_path = argv[3];
+    else
+        archive_path = argv[2];
+    
+    switch (option) {
+    case 'i':
+        insert_in_archive(archive_path, argc - 3, argv + 3);
+        break;
+    case 'a':
+        break;
+    case 'm':
+        mvtarget = argv[2];
+        break;
+    case 'x':
+        break;
+    case 'r':
+        break;
+    case 'c':
+        list_archive(archive_path);
+        break;
     case 'h':
         printf("Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n\n",
                 argv[0]);
-        printf("Opções:\n");
+        printf("Opções (use exatamente uma):\n");
         printf("    -i <archive> <membro1> [membro2 [...]] Insere um ou mais");
         printf(" membros no archive, respeitando a ordem dos parâmetros");
         printf(" (membro1, depois membro2 e assim por diante). Se um membro");
@@ -95,9 +126,8 @@ int main(int argc, char **argv) {
         printf(" ordem no arquivo.\n");
         printf("    -h                                     Imprime essa");
         printf(" mensagem de ajuda.\n");
-        break;
-
-    default:
+        return 0;
+    default: // inatingível
         USAGE_EXIT(1);
     }
 

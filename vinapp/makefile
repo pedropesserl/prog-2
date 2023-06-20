@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
-OBJ = vinapp.o libbin.o libarchiver.o insert_append.o
-DEPS = libbin.h libarchive.h insert_append.h
+OBJ = vinapp.o libbin.o libarchiver.o insert.o list.o
+DEPS = libbin.h libarchive.h insert.h list.h
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -12,4 +12,4 @@ vina++: $(OBJ)
 	$(CC) -o $@ $^
 
 clean:
-	rm -f $(OBJ) vina++ teste_insert.o
+	rm -f $(OBJ) vina++
