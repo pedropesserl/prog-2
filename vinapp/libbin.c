@@ -1,10 +1,6 @@
-/* #include <sys/stat.h> */
-/* #include <sys/types.h> */
-/* #include <unistd.h> */
+#include <unistd.h>
+#include <sys/types.h>
 #include "libbin.h"
-#ifndef BUFFERSIZE
-#define BUFFERSIZE 1024
-#endif
 
 size_t get_size(FILE *f) {
     size_t curr_pos = ftell(f);
@@ -17,12 +13,10 @@ size_t get_size(FILE *f) {
 void open_space(FILE *f, size_t space, size_t pos) {
     size_t curr_pos = ftell(f);
     uchar buffer[BUFFERSIZE] = {0};
-    size_t btm = get_size(f) - pos + 1;
+    size_t sz = get_size(f);
+    size_t btm = sz - pos + 1;
 
-    fseek(f, 0, SEEK_END);
-    for (size_t s = space; s >= BUFFERSIZE; s -= BUFFERSIZE)
-        fwrite(buffer, 1, BUFFERSIZE, f);
-    fwrite(buffer, 1, space % BUFFERSIZE, f);
+    ftruncate(fileno(f), sz + space);
 
     size_t remainder = btm % BUFFERSIZE;
     fseek(f, -(space + remainder), SEEK_END);
@@ -43,11 +37,25 @@ void open_space(FILE *f, size_t space, size_t pos) {
 }
 
 void remove_space(FILE *f, size_t space, size_t pos) {
-    fprintf(stderr, "remove_space(): não implementada\n");
-    exit(1);
-
     uchar buffer[BUFFERSIZE] = {0};
+    size_t sz = get_size(f);
+    size_t bytes_read;
 
-    
+    if (sz <= pos + space) {
+        ftruncate(fileno(f), pos);
+        rewind(f);
+        return;
+    }
+
+    int file_over;
+    fseek(f, pos + space, SEEK_SET);
+    do {
+        bytes_read = fread(buffer, 1, BUFFERSIZE, f);
+        file_over = feof(f);
+        fseek(f, -(space + bytes_read), SEEK_CUR);
+        fwrite(buffer, 1, bytes_read, f);
+        fseek(f, space, SEEK_CUR);
+    } while (!file_over);
+    ftruncate(fileno(f), sz - space);
     rewind(f);
 }

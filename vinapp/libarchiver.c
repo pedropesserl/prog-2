@@ -6,15 +6,13 @@
 #include <string.h>
 #include <grp.h>
 #include <pwd.h>
-/* #include <unistd.h> */
 #include "libbin.h"
 #include "libarchiver.h"
-
-#define BUFFERSIZE 1024
 
 struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     size_t dirpos;
     // a posição (0-indexed) da seção do diretório está no início do archive
+    rewind(archive);
     fread(&dirpos, sizeof(size_t), 1, archive);
     fseek(archive, dirpos, SEEK_SET);
     size_t dirsize = get_size(archive) - dirpos;
@@ -28,18 +26,18 @@ struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     return dir;
 }
 
-char *get_uid(char *path) {
+void get_uid(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);
     struct passwd *pwd = getpwuid(info.st_uid);
-    return pwd->pw_name;
+    strncpy(buffer, pwd->pw_name, MAX_UNAME_LEN);
 }
 
-char *get_gid(char *path) {
+void get_gid(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);
     struct group *grp = getgrgid(info.st_gid);
-    return grp->gr_name;
+    strncpy(buffer, grp->gr_name, MAX_GNAME_LEN);
 }
 
 static char get_mode(int mode) {
@@ -57,32 +55,26 @@ static char get_mode(int mode) {
     return m;
 }
 
-char *get_perm(char *path) {
+void get_perm(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);
-    char *perm = (char*)calloc(11, sizeof(char)); // "drwxrwxrwx\0"
-    perms[0] = get_mode(info.st_mode);
-    perms[1] = (info.st_mode & S_IRUSR) ? 'r' : '-';
-    perms[2] = (info.st_mode & S_IWUSR) ? 'w' : '-';
-    perms[3] = (info.st_mode & S_IXUSR) ? 'x' : '-';
-    perms[4] = (info.st_mode & S_IRGRP) ? 'r' : '-';
-    perms[5] = (info.st_mode & S_IWGRP) ? 'w' : '-';
-    perms[6] = (info.st_mode & S_IXGRP) ? 'x' : '-';
-    perms[7] = (info.st_mode & S_IROTH) ? 'r' : '-';
-    perms[8] = (info.st_mode & S_IWOTH) ? 'w' : '-';
-    perms[9] = (info.st_mode & S_IXOTH) ? 'x' : '-';
-    perms[10] = '\0';
-    return perm;
+    buffer[0] = get_mode(info.st_mode);
+    buffer[1] = (info.st_mode & S_IRUSR) ? 'r' : '-';
+    buffer[2] = (info.st_mode & S_IWUSR) ? 'w' : '-';
+    buffer[3] = (info.st_mode & S_IXUSR) ? 'x' : '-';
+    buffer[4] = (info.st_mode & S_IRGRP) ? 'r' : '-';
+    buffer[5] = (info.st_mode & S_IWGRP) ? 'w' : '-';
+    buffer[6] = (info.st_mode & S_IXGRP) ? 'x' : '-';
+    buffer[7] = (info.st_mode & S_IROTH) ? 'r' : '-';
+    buffer[8] = (info.st_mode & S_IWOTH) ? 'w' : '-';
+    buffer[9] = (info.st_mode & S_IXOTH) ? 'x' : '-';
+    buffer[10] = '\0';
 } 
 
-char *get_modtime(char *path) {
+void get_modtime(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);
-    char *tm = (char*)calloc(17, sizeof(char)); // "YYYY-MM-DD hh:mm\0"
-    if (!tm)
-        MEM_ERR(1);
-    strftime(tm, 17, "%Y-%m-%d %H:%M", localtime(&info.st_ctime));
-    return tm;
+    strftime(buffer, 17, "%Y-%m-%d %H:%M", localtime(&info.st_ctime));
 }
 
 size_t get_ord(struct File_info *dir, size_t dirnmemb, char *member_name) {
@@ -92,9 +84,10 @@ size_t get_ord(struct File_info *dir, size_t dirnmemb, char *member_name) {
     return 0;
 }
 
-size_t get_pos_from_ord(struct File_info *dir, size_t ord) {
-    size_t pos = sizeof(size_t) - 1; // os primeiros bytes guardam a posição do diretório
-    for (size_t i = 0; i < ord-1; i++)
-        pos += dir[i].size;
-    return pos;
+size_t get_pos(struct File_info *dir, size_t ord) {
+    if (ord < 1)
+        return 0; // Entrada inválida
+    if (ord == 1)
+        return sizeof(size_t); // Os primeiros bytes guardam a posição do diretório
+    return dir[ord-2].pos + dir[ord-2].size;
 }

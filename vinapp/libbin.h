@@ -5,8 +5,15 @@
 #include <stdlib.h>
 
 #define uchar unsigned char
-#define MAX_FNAME_LEN 4096 // número máximo de caracteres no nome de um
-                           // arquivo e seu caminho no Linux
+#define MAX_FNAME_LEN 256 // Número máximo de caracteres no nome de um
+                          // arquivo e seu caminho
+// Mesmo para nome de usuário e nome de grupo
+#define MAX_UNAME_LEN 9
+#define MAX_GNAME_LEN 9
+
+#ifndef BUFFERSIZE
+#define BUFFERSIZE 1024
+#endif
 
 #define MEM_ERR(err) do {                                                           \
         fprintf(stderr, "[libbin] Erro na alocação de memória.\n");                 \
