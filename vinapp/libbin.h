@@ -15,26 +15,30 @@
 #define BUFFERSIZE 1024
 #endif
 
-#define MEM_ERR(err) do {                                                           \
-        fprintf(stderr, "[libbin] Erro na alocação de memória.\n");                 \
+#define MEM_ERR(err, where) do {                                                    \
+        fprintf(stderr, "Erro na alocação de memória.\n");                          \
+        fprintf(stderr, "Em: %s.\n", where);                                        \
         exit(err);                                                                  \
-    } while (0)                                                                     \
+    } while (0)
 
 #define FOPEN_ERR(err, filename) do {                                               \
-        fprintf(stderr, "[libbin] Erro ao abrir/escrever arquivo %s.\n", filename); \
+        fprintf(stderr, "Erro ao abrir/escrever arquivo %s.\n", filename);          \
         exit(err);                                                                  \
     } while (0)
 
 #define FDNE_ERR(err, filename) do {                                                \
-        fprintf(stderr, "[libbin] Erro: arquivo %s não existe.\n", filename);       \
+        fprintf(stderr, "Erro: arquivo ou diretório %s não existe.\n", filename);   \
         exit(err);                                                                  \
     } while (0)
 
+#define FDNE_WARN(filename)                                                         \
+        printf("Aviso: arquivo ou diretório %s não existe. Ignorado.\n", filename);                     
+
 #define FEXISTS_ERR(err, filename) do {                                             \
-        fprintf(stderr, "[libbin] Erro: o arquivo %s já existe. ", filename);       \
+        fprintf(stderr, "Erro: o arquivo %s já existe. ", filename);                \
         fprintf(stderr, "Não é possível sobrescrevê-lo.\n");                        \
         exit(err);                                                                  \
-    } while (0);
+    } while (0)
 
 // Retorna o tamanho do arquivo f em bytes.
 size_t get_size(FILE *f);

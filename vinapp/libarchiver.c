@@ -19,7 +19,7 @@ struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     *dirnmemb = dirsize / sizeof(struct File_info);
     struct File_info *dir = (struct File_info*)calloc(*dirnmemb, sizeof(struct File_info));
     if (!dir)
-        MEM_ERR(1);
+        MEM_ERR(1, "libarchiver.c:22");
     
     fread(dir, sizeof(struct File_info), *dirnmemb, archive);
     rewind(archive);
@@ -74,7 +74,7 @@ void get_perm(char *buffer, char *path) {
 void get_modtime(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);
-    strftime(buffer, 17, "%Y-%m-%d %H:%M", localtime(&info.st_ctime));
+    strftime(buffer, 17, "%Y-%m-%d %H:%M", localtime(&info.st_ctim.tv_sec));
 }
 
 size_t get_ord(struct File_info *dir, size_t dirnmemb, char *member_name) {
@@ -90,4 +90,13 @@ size_t get_pos(struct File_info *dir, size_t ord) {
     if (ord == 1)
         return sizeof(size_t); // Os primeiros bytes guardam a posição do diretório
     return dir[ord-2].pos + dir[ord-2].size;
+}
+
+void standardize_name(char *membname, char *buffer) {
+    if (membname[0] == '/')
+        snprintf(buffer, MAX_FNAME_LEN, ".%s", membname);
+    else if (membname[0] != '.' || membname[1] != '/')
+        snprintf(buffer, MAX_FNAME_LEN, "./%s", membname);
+    else
+        strncpy(buffer, membname, MAX_FNAME_LEN);
 }

@@ -43,4 +43,8 @@ size_t get_ord(struct File_info *dir, size_t dirnmemb, char *member_name);
 // o arquivo dessa ordem começa no archive (0-indexed).
 size_t get_pos(struct File_info *dir, size_t ord);
 
+// Dado um nome de arquivo membname, escreve em buffer sua versão relativizada,
+// se já não for.
+void standardize_name(char *membname, char *buffer);
+
 #endif // ARCHIVER_H_

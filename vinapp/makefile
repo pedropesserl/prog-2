@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
-OBJ = vinapp.o libbin.o libarchiver.o insert.o list.o
-DEPS = libbin.h libarchive.h insert.h list.h
+OBJ = vinapp.o libbin.o libarchiver.o insert.o list.o remove.o
+DEPS = libbin.h libarchive.h insert.h list.h remove.h
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

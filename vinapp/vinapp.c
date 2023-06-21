@@ -16,7 +16,7 @@
 char parse_options(int argc, char **argv) {
     if (argc > 1 && argv[1][0] != '-') // o primeiro argumento precisa ser uma opção
         USAGE_EXIT(1);
-    int optn;
+    int optn = 0;
     char option, c;
     while ((c = getopt(argc, argv, "iam:xrch")) != -1) {
       option = c;
@@ -68,7 +68,7 @@ char parse_options(int argc, char **argv) {
           USAGE_EXIT(1);
       }
     }
-    if (optn != 1) // exatamente uma opção deve ser passada
+    if (optn != 1)
         USAGE_EXIT(1);
     return option;
 }
@@ -87,9 +87,10 @@ int main(int argc, char **argv) {
     
     switch (option) {
     case 'i':
-        insert_in_archive(archive_path, argc - 3, argv + 3);
+        insert_overwrite(archive_path, argc - 3, argv + 3);
         break;
     case 'a':
+        insert_soft(archive_path, argc - 3, argv + 3);
         break;
     case 'm':
         mvtarget = argv[2];
