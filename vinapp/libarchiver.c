@@ -26,6 +26,15 @@ struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     return dir;
 }
 
+void write_dir(FILE *archive, struct File_info *dir, size_t dirnmemb) {
+    size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
+    rewind(archive);
+    fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
+    fseek(archive, new_dir_pos, SEEK_SET);
+    fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
+    rewind(archive);
+}
+
 void get_uid(char *buffer, char *path) {
     struct stat info;
     stat(path, &info);

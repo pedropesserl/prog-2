@@ -46,52 +46,54 @@ static struct File_info fill_file_info(struct File_info *dir,
     return memb;
 }
 
-static void insert(FILE *archive, struct File_info *dir,
-                   size_t dirnmemb, char *member_name) {
+static void insert(FILE *archive, struct File_info **dir,
+                   size_t *dirnmemb, char *member_name) {
+    FILE *member = fopen(member_name, "rb");
+    if (!member) {
+        FDNE_WARN(member_name);
+        return;
+    }
+
     char std_name[MAX_FNAME_LEN];
     standardize_name(member_name, std_name);
     size_t member_ord, old_size = 0;
-    int is_new_member = get_ord(dir, dirnmemb, std_name) == 0;
+    int is_new_member = get_ord(*dir, *dirnmemb, std_name) == 0;
     if (is_new_member) {
-        dir = reallocarray(dir, ++dirnmemb, sizeof(struct File_info));
-        if (!dir)
-            MEM_ERR(1, "insert.c:58");
-        member_ord = dirnmemb;
+        *dir = reallocarray(*dir, ++(*dirnmemb), sizeof(struct File_info));
+        if (!(*dir))
+            MEM_ERR(1, "insert.c: insert()");
+        member_ord = *dirnmemb;
     } else {
-        member_ord = get_ord(dir, dirnmemb, std_name);
-        old_size = dir[member_ord-1].size;
+        member_ord = get_ord(*dir, *dirnmemb, std_name);
+        old_size = (*dir)[member_ord-1].size;
     }
 
-    FILE *member = fopen(member_name, "rb");
-    if (!member)
-        FDNE_WARN(member_name);
-
-    dir[member_ord-1] = fill_file_info(dir, member, member_name, member_ord);
+    (*dir)[member_ord-1] = fill_file_info(*dir, member, member_name, member_ord);
 
     if (!is_new_member) { // arquivo sobrescreve um de mesmo nome no meio do archive
         size_t new = member_ord-1;
-        if (dir[new].size > old_size) {
-            size_t space_needed = dir[new].size - old_size;
-            open_space(archive, space_needed, dir[new].pos + old_size);
-            for (size_t i = member_ord; i < dirnmemb; i++)
-                dir[i].pos += space_needed;
+        if ((*dir)[new].size > old_size) {
+            size_t space_needed = (*dir)[new].size - old_size;
+            open_space(archive, space_needed, (*dir)[new].pos + old_size);
+            for (size_t i = member_ord; i < *dirnmemb; i++)
+                (*dir)[i].pos += space_needed;
 
-        } else if (dir[new].size < old_size) {
-            size_t space_leftover = old_size - dir[new].size;
-            remove_space(archive, space_leftover, dir[new].pos + dir[new].size);
-            for (size_t i = member_ord; i < dirnmemb; i++)
-                dir[i].pos -= space_leftover;
+        } else if ((*dir)[new].size < old_size) {
+            size_t space_leftover = old_size - (*dir)[new].size;
+            remove_space(archive, space_leftover, (*dir)[new].pos + (*dir)[new].size);
+            for (size_t i = member_ord; i < *dirnmemb; i++)
+                (*dir)[i].pos -= space_leftover;
         }
     }
 
     // escreve a nova posição do diretório no início do archive
-    size_t new_dir_pos = dir[dirnmemb-1].pos + dir[dirnmemb-1].size;
+    size_t new_dir_pos = (*dir)[*dirnmemb-1].pos + (*dir)[*dirnmemb-1].size;
     rewind(archive);
     fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
 
     uchar buffer[BUFFERSIZE];
     size_t bytes_read;
-    fseek(archive, dir[member_ord-1].pos, SEEK_SET);
+    fseek(archive, (*dir)[member_ord-1].pos, SEEK_SET);
     do {
         bytes_read = fread(buffer, 1, BUFFERSIZE, member);
         fwrite(buffer, 1, bytes_read, archive);
@@ -99,7 +101,7 @@ static void insert(FILE *archive, struct File_info *dir,
 
     // reescreve o diretório no fim do archive
     fseek(archive, new_dir_pos, SEEK_SET);
-    fwrite(dir, sizeof(struct File_info), dirnmemb, archive);
+    fwrite(*dir, sizeof(struct File_info), *dirnmemb, archive);
     rewind(archive);
 }
 
@@ -111,13 +113,13 @@ void insert_overwrite(char *archive_path, int nmemb, char **membv) {
         archive = fopen(archive_path, "wb+");
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
-            MEM_ERR(1, "insert.c:114");
+            MEM_ERR(1, "insert.c: insert_overwrite()");
     } else {
         dir = read_dir(archive, &dirnmemb);
     }
 
     for (int i = 0; i < nmemb; i++)
-        insert(archive, dir, dirnmemb, membv[i]);
+        insert(archive, &dir, &dirnmemb, membv[i]);
 }
 
 void insert_soft(char *archive_path, int nmemb, char **membv) {
@@ -128,7 +130,7 @@ void insert_soft(char *archive_path, int nmemb, char **membv) {
         archive = fopen(archive_path, "wb+");
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
-            MEM_ERR(1, "insert.c:131");
+            MEM_ERR(1, "insert.c: insert_soft()");
     } else {
         dir = read_dir(archive, &dirnmemb);
     }
@@ -138,10 +140,10 @@ void insert_soft(char *archive_path, int nmemb, char **membv) {
         standardize_name(membv[i], std_name);
         size_t member_ord = get_ord(dir, dirnmemb, std_name);
         if (member_ord == 0) {
-            insert(archive, dir, dirnmemb, membv[i]);
+            insert(archive, &dir, &dirnmemb, membv[i]);
         } else {
             if (compare_modtimes(dir, member_ord, membv[i]) > 0)
-                insert(archive, dir, dirnmemb, membv[i]);
+                insert(archive, &dir, &dirnmemb, membv[i]);
         }
     }
 }

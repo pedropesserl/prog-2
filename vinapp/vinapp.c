@@ -4,6 +4,7 @@
 #include "libbin.h"
 #include "insert.h"
 #include "list.h"
+#include "remove.h"
 
 #define USAGE_EXIT(err) do {                                                    \
     fprintf(stderr, "Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n", \
@@ -98,6 +99,7 @@ int main(int argc, char **argv) {
     case 'x':
         break;
     case 'r':
+        remove_from_archive(archive_path, argc - 3, argv + 3);
         break;
     case 'c':
         list_archive(archive_path);

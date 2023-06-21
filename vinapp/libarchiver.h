@@ -19,6 +19,10 @@ struct File_info {
 // Retorna em dirnmemb o número de structs lidas.
 struct File_info *read_dir(FILE *archive, size_t *dirnmemb);
 
+// Escreve a nova posição de um archivo dir de dirnmemb membros nos primeiros
+// bytes do archive, e o seu conteúdo na posição destinada (após o último membro).
+void write_dir(FILE *archive, struct File_info *dir, size_t dirnmemb);
+
 // Escreve em buffer uma string com o nome do usuário ao qual o arquivo de nome
 // path pertence.
 void get_uid(char *buffer, char *path);

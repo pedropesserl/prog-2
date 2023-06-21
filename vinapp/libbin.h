@@ -1,5 +1,5 @@
-#ifndef BIN_FILES_H_
-#define BIN_FILES_H_
+#ifndef LIBBIN_H_
+#define LIBBIN_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,4 +51,4 @@ void open_space(FILE *f, size_t space, size_t pos);
 // pos. Trunca o tamanho do arquivo e o rebobina.
 void remove_space(FILE *f, size_t space, size_t pos);
 
-#endif // BIN_FILES_H_
+#endif // LIBBIN_H_
