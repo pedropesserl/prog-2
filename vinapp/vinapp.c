@@ -88,10 +88,10 @@ int main(int argc, char **argv) {
     
     switch (option) {
     case 'i':
-        insert_overwrite(archive_path, argc - 3, argv + 3);
+        insert_in_archive(archive_path, argc - 3, argv + 3);
         break;
     case 'a':
-        insert_soft(archive_path, argc - 3, argv + 3);
+        update_archive(archive_path, argc - 3, argv + 3);
         break;
     case 'm':
         mvtarget = argv[2];

@@ -87,41 +87,47 @@ static void insert(FILE *archive, struct File_info **dir,
     size_t childc = peek_dir(member_name, &childv);
     for (size_t i = 0; i < childc; i++) {
         char child_full_path[MAX_FNAME_LEN] = {0};
-        snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s", member_name, childv[i]);
+        snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s\0", member_name, childv[i]);
         insert(archive, dir, dirnmemb, child_full_path);
         free(childv[i]);
     }
     free(childv);
 }
 
-void insert_overwrite(char *archive_path, int nmemb, char **membv) {
+void insert_in_archive(char *archive_path, int nmemb, char **membv) {
     struct File_info *dir = NULL;
     size_t dirnmemb = 0;
     FILE *archive = fopen(archive_path, "rb+");
-    if (!archive || get_size(archive) == 0) {
-        archive = fopen(archive_path, "wb+");
+    if (archive && get_size(archive) > 0) {
+        dir = read_dir(archive, &dirnmemb);
+    } else {
+        if (!archive)
+            archive = fopen(archive_path, "wb+");
+        else
+            archive = freopen(archive_path, "wb+", archive);
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
-            MEM_ERR(1, "insert.c: insert_overwrite()");
-    } else {
-        dir = read_dir(archive, &dirnmemb);
+            MEM_ERR(1, "insert.c: insert_soft()");
     }
 
     for (int i = 0; i < nmemb; i++)
         insert(archive, &dir, &dirnmemb, membv[i]);
 }
 
-void insert_soft(char *archive_path, int nmemb, char **membv) {
+void update_archive(char *archive_path, int nmemb, char **membv) {
     struct File_info *dir = NULL;
     size_t dirnmemb = 0;
     FILE *archive = fopen(archive_path, "rb+");
-    if (!archive || get_size(archive) == 0) {
-        archive = fopen(archive_path, "wb+");
+    if (archive && get_size(archive) > 0) {
+        dir = read_dir(archive, &dirnmemb);
+    } else {
+        if (!archive)
+            archive = fopen(archive_path, "wb+");
+        else
+            archive = freopen(archive_path, "wb+", archive);
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
             MEM_ERR(1, "insert.c: insert_soft()");
-    } else {
-        dir = read_dir(archive, &dirnmemb);
     }
 
     for (int i = 0; i < nmemb; i++) {

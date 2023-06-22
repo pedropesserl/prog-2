@@ -35,13 +35,27 @@ static void remove_trunc(FILE *archive, struct File_info **dir,
         MEM_ERR(1, "remove.c: remove_trunc()");
 
     write_dir(archive, *dir, *dirnmemb);
+
+    // depois de remover o arquivo, remove todos os arquivos que tiverem o nome
+    // começando com "std_name/" (ou seja, se for um diretório, remove os filhos).
+    char dir_name[MAX_FNAME_LEN] = {0};
+    snprintf(dir_name, MAX_FNAME_LEN, "%s/", std_name);
+    size_t dir_name_sz = strnlen(dir_name, MAX_FNAME_LEN);
+    for (size_t i = 0; i < *dirnmemb; i++)
+        if (strncmp((*dir)[i].name, dir_name, dir_name_sz) == 0)
+            remove_trunc(archive, &dir, &dirnmemb, (*dir)[i].name);
 }
 
 void remove_from_archive(char *archive_path, int nmemb, char **membv) {
     FILE *archive = fopen(archive_path, "rb+");
     if (!archive) {
         DNE_WARN(archive_path);
-        exit(0);
+        return;
+    }
+    if (get_size(archive) == 0) {
+        fclose(archive);
+        printf("O arquivo %s está vazio.\n", archive_path);
+        return;
     }
     size_t dirnmemb = 0;
     struct File_info *dir = read_dir(archive, &dirnmemb);
