@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <sys/types.h>
+#include <time.h>
 #include "libbin.h"
 
 size_t get_size(FILE *f) {

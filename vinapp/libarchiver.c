@@ -49,7 +49,13 @@ void get_gid(char *buffer, char *path) {
     strncpy(buffer, grp->gr_name, MAX_GNAME_LEN);
 }
 
-static char get_mode(int mode) {
+int get_perm(char *path) {
+    struct stat info;
+    stat(path, &info);
+    return info.st_mode;
+}
+
+static char format_mode(int mode) {
     char m;
     switch (mode & S_IFMT) {
         case S_IFREG:  m = '-'; break;
@@ -64,26 +70,29 @@ static char get_mode(int mode) {
     return m;
 }
 
-void get_perm(char *buffer, char *path) {
-    struct stat info;
-    stat(path, &info);
-    buffer[0] = get_mode(info.st_mode);
-    buffer[1] = (info.st_mode & S_IRUSR) ? 'r' : '-';
-    buffer[2] = (info.st_mode & S_IWUSR) ? 'w' : '-';
-    buffer[3] = (info.st_mode & S_IXUSR) ? 'x' : '-';
-    buffer[4] = (info.st_mode & S_IRGRP) ? 'r' : '-';
-    buffer[5] = (info.st_mode & S_IWGRP) ? 'w' : '-';
-    buffer[6] = (info.st_mode & S_IXGRP) ? 'x' : '-';
-    buffer[7] = (info.st_mode & S_IROTH) ? 'r' : '-';
-    buffer[8] = (info.st_mode & S_IWOTH) ? 'w' : '-';
-    buffer[9] = (info.st_mode & S_IXOTH) ? 'x' : '-';
+void format_perm(char *buffer, int mode) {
+    buffer[0] = format_mode(mode);
+    buffer[1] = (mode & S_IRUSR) ? 'r' : '-';
+    buffer[2] = (mode & S_IWUSR) ? 'w' : '-';
+    buffer[3] = (mode & S_IXUSR) ? 'x' : '-';
+    buffer[4] = (mode & S_IRGRP) ? 'r' : '-';
+    buffer[5] = (mode & S_IWGRP) ? 'w' : '-';
+    buffer[6] = (mode & S_IXGRP) ? 'x' : '-';
+    buffer[7] = (mode & S_IROTH) ? 'r' : '-';
+    buffer[8] = (mode & S_IWOTH) ? 'w' : '-';
+    buffer[9] = (mode & S_IXOTH) ? 'x' : '-';
     buffer[10] = '\0';
 } 
 
-void get_modtime(char *buffer, char *path) {
+time_t get_modtime(char *path) {
     struct stat info;
     stat(path, &info);
-    strftime(buffer, 17, "%Y-%m-%d %H:%M", localtime(&info.st_ctim.tv_sec));
+    return info.st_mtim.tv_sec;
+}
+
+void format_modtime(char *buffer, time_t time) {
+    struct tm *local = localtime(&time);
+    strftime(buffer, 17, "%Y-%m-%d %H:%M", local);
 }
 
 size_t get_ord(struct File_info *dir, size_t dirnmemb, char *member_name) {

@@ -8,24 +8,6 @@
 #include "libarchiver.h"
 #include "insert.h"
 
-// Compara o tempo de modificação do arquivo de nome new_memb com o armazenado
-// em dir na ordem old_ord. Retorna um valor maior que, menor que, ou igual a
-// 0 se o novo membro for respectivamente mais novo, de tempo igual, ou mais velho
-// que o membro já armazenado.
-static double compare_modtimes(struct File_info *dir, size_t old_ord, char *new_memb) {
-    struct tm old_tm = {0};
-    strptime(dir[old_ord-1].td, "%Y-%m-%d %H:%M", &old_tm);
-    time_t old_time = mktime(&old_tm);
-
-    struct stat new_info;
-    stat(new_memb, &new_info);
-    struct tm *new_tm = localtime(&new_info.st_mtim.tv_sec);
-    new_tm->tm_sec = 0;
-    time_t new_time = mktime(new_tm);
-
-    return difftime(new_time, old_time);
-}
-
 static struct File_info fill_file_info(struct File_info *dir,
                                        FILE *member,
                                        char *member_name,
@@ -38,8 +20,8 @@ static struct File_info fill_file_info(struct File_info *dir,
 
     get_uid(memb.uid, member_name);
     get_gid(memb.gid, member_name);
-    get_perm(memb.perm, member_name);
-    get_modtime(memb.td, member_name);
+    memb.perm = get_perm(member_name);
+    memb.td = get_modtime(member_name);
     memb.size = get_size(member);
     memb.ord = member_ord;
     memb.pos = get_pos(dir, member_ord);
@@ -128,14 +110,17 @@ void insert_soft(char *archive_path, int nmemb, char **membv) {
     }
 
     for (int i = 0; i < nmemb; i++) {
-        char std_name[MAX_FNAME_LEN];
-        standardize_name(membv[i], std_name);
-        size_t member_ord = get_ord(dir, dirnmemb, std_name);
-        if (member_ord == 0) {
-            insert(archive, &dir, &dirnmemb, membv[i]);
-        } else {
-            if (compare_modtimes(dir, member_ord, membv[i]) > 0)
+        /* if (is_dir(membv[i])) { */
+        /* } else { */
+            char std_name[MAX_FNAME_LEN];
+            standardize_name(membv[i], std_name);
+            size_t member_ord = get_ord(dir, dirnmemb, std_name);
+            if (member_ord == 0) {
                 insert(archive, &dir, &dirnmemb, membv[i]);
-        }
+            } else {
+                if (difftime(get_modtime(membv[i]), dir[member_ord-1].td) > 0)
+                    insert(archive, &dir, &dirnmemb, membv[i]);
+            }
+        /* } */
     }
 }
