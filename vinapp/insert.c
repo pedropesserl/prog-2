@@ -32,7 +32,7 @@ static struct File_info fill_file_info(struct File_info *dir,
                                        size_t member_ord) {
     struct File_info memb;
 
-    char std[MAX_FNAME_LEN];
+    char std[MAX_FNAME_LEN] = {0};
     standardize_name(member_name, std);
     strncpy(memb.name, std, MAX_FNAME_LEN);
 
@@ -86,11 +86,6 @@ static void insert(FILE *archive, struct File_info **dir,
         }
     }
 
-    // escreve a nova posição do diretório no início do archive
-    size_t new_dir_pos = (*dir)[*dirnmemb-1].pos + (*dir)[*dirnmemb-1].size;
-    rewind(archive);
-    fwrite(&new_dir_pos, sizeof(size_t), 1, archive);
-
     uchar buffer[BUFFERSIZE];
     size_t bytes_read;
     fseek(archive, (*dir)[member_ord-1].pos, SEEK_SET);
@@ -99,10 +94,7 @@ static void insert(FILE *archive, struct File_info **dir,
         fwrite(buffer, 1, bytes_read, archive);
     } while (!feof(member));
 
-    // reescreve o diretório no fim do archive
-    fseek(archive, new_dir_pos, SEEK_SET);
-    fwrite(*dir, sizeof(struct File_info), *dirnmemb, archive);
-    rewind(archive);
+    write_dir(archive, *dir, *dirnmemb);
 }
 
 void insert_overwrite(char *archive_path, int nmemb, char **membv) {
