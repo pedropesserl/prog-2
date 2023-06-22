@@ -5,7 +5,7 @@
 void list_archive(char *archive_path) {
     FILE *archive = fopen(archive_path, "rb");
     if (!archive)
-        FDNE_ERR(2, archive_path);
+        DNE_ERR(2, archive_path);
 
     size_t dirnmemb = 0;
     struct File_info *dir = read_dir(archive, &dirnmemb);

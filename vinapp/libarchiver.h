@@ -32,15 +32,8 @@ void get_uid(char *buffer, char *path);
 // path pertence.
 void get_gid(char *buffer, char *path);
 
-// Retorna o modo e permissões do arquivo de nome path, em um
-// int (campo st_mode da struct stat).
-int get_perm(char *path);
-
 // Dado um modo mode, escreve em buffer uma string no formato: drwxrwxrwx.
 void format_perm(char *buffer, int mode);
-
-// Retorna o tempo da última modificação do arquivo de nome path, em um tipo time_t.
-time_t get_modtime(char *path);
 
 // Dado um tempo time, escreve em buffer uma string no formato: YYYY-MM-DD hh:mm
 void format_modtime(char *buffer, time_t time);

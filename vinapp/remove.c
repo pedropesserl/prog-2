@@ -40,7 +40,7 @@ static void remove_trunc(FILE *archive, struct File_info **dir,
 void remove_from_archive(char *archive_path, int nmemb, char **membv) {
     FILE *archive = fopen(archive_path, "rb+");
     if (!archive) {
-        FDNE_WARN(archive_path);
+        DNE_WARN(archive_path);
         exit(0);
     }
     size_t dirnmemb = 0;

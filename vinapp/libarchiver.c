@@ -19,7 +19,7 @@ struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     *dirnmemb = dirsize / sizeof(struct File_info);
     struct File_info *dir = (struct File_info*)calloc(*dirnmemb, sizeof(struct File_info));
     if (!dir)
-        MEM_ERR(1, "libarchiver.c:22");
+        MEM_ERR(1, "libarchiver.c: read_dir()");
     
     fread(dir, sizeof(struct File_info), *dirnmemb, archive);
     rewind(archive);
@@ -47,12 +47,6 @@ void get_gid(char *buffer, char *path) {
     stat(path, &info);
     struct group *grp = getgrgid(info.st_gid);
     strncpy(buffer, grp->gr_name, MAX_GNAME_LEN);
-}
-
-int get_perm(char *path) {
-    struct stat info;
-    stat(path, &info);
-    return info.st_mode;
 }
 
 static char format_mode(int mode) {
@@ -83,12 +77,6 @@ void format_perm(char *buffer, int mode) {
     buffer[9] = (mode & S_IXOTH) ? 'x' : '-';
     buffer[10] = '\0';
 } 
-
-time_t get_modtime(char *path) {
-    struct stat info;
-    stat(path, &info);
-    return info.st_mtim.tv_sec;
-}
 
 void format_modtime(char *buffer, time_t time) {
     struct tm *local = localtime(&time);

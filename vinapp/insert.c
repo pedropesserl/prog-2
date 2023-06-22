@@ -2,8 +2,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <pwd.h>
-#define __USE_XOPEN
-#define _GNU_SOURCE
 #include <time.h>
 #include "libarchiver.h"
 #include "insert.h"
@@ -32,18 +30,18 @@ static void insert(FILE *archive, struct File_info **dir,
                    size_t *dirnmemb, char *member_name) {
     FILE *member = fopen(member_name, "rb");
     if (!member) {
-        FDNE_WARN(member_name);
+        DNE_WARN(member_name);
         return;
     }
 
-    char std_name[MAX_FNAME_LEN];
+    char std_name[MAX_FNAME_LEN] = {0};
     standardize_name(member_name, std_name);
     size_t member_ord, old_size = 0;
     int is_new_member = get_ord(*dir, *dirnmemb, std_name) == 0;
     if (is_new_member) {
         *dir = reallocarray(*dir, ++(*dirnmemb), sizeof(struct File_info));
         if (!(*dir))
-            MEM_ERR(1, "insert.c: insert()");
+            MEM_ERR(1, "insert.c: insert() (dir)");
         member_ord = *dirnmemb;
     } else {
         member_ord = get_ord(*dir, *dirnmemb, std_name);
@@ -77,13 +75,27 @@ static void insert(FILE *archive, struct File_info **dir,
     } while (!feof(member));
 
     write_dir(archive, *dir, *dirnmemb);
+
+    fclose(member);
+
+    // depois de escrever o arquivo, checa se é um diretório;
+    // se for, insere recursivamente.
+    char **childv = malloc(sizeof(char*));
+    if (!childv)
+        MEM_ERR(1, "insert.c: insert() (childv)");
+    size_t childc = peek_dir(member_name, &childv);
+    for (size_t i = 0; i < childc; i++) {
+        insert(archive, dir, dirnmemb, childv[i]);
+        free(childv[i]);
+    }
+    free(childv);
 }
 
 void insert_overwrite(char *archive_path, int nmemb, char **membv) {
     struct File_info *dir = NULL;
     size_t dirnmemb = 0;
     FILE *archive = fopen(archive_path, "rb+");
-    if (!archive) {
+    if (!archive || get_size(archive) == 0) {
         archive = fopen(archive_path, "wb+");
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
@@ -100,7 +112,7 @@ void insert_soft(char *archive_path, int nmemb, char **membv) {
     struct File_info *dir = NULL;
     size_t dirnmemb = 0;
     FILE *archive = fopen(archive_path, "rb+");
-    if (!archive) {
+    if (!archive || get_size(archive) == 0) {
         archive = fopen(archive_path, "wb+");
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
@@ -110,17 +122,14 @@ void insert_soft(char *archive_path, int nmemb, char **membv) {
     }
 
     for (int i = 0; i < nmemb; i++) {
-        /* if (is_dir(membv[i])) { */
-        /* } else { */
-            char std_name[MAX_FNAME_LEN];
-            standardize_name(membv[i], std_name);
-            size_t member_ord = get_ord(dir, dirnmemb, std_name);
-            if (member_ord == 0) {
+        char std_name[MAX_FNAME_LEN];
+        standardize_name(membv[i], std_name);
+        size_t member_ord = get_ord(dir, dirnmemb, std_name);
+        if (member_ord == 0) {
+            insert(archive, &dir, &dirnmemb, membv[i]);
+        } else {
+            if (difftime(get_modtime(membv[i]), dir[member_ord-1].td) > 0)
                 insert(archive, &dir, &dirnmemb, membv[i]);
-            } else {
-                if (difftime(get_modtime(membv[i]), dir[member_ord-1].td) > 0)
-                    insert(archive, &dir, &dirnmemb, membv[i]);
-            }
-        /* } */
+        }
     }
 }
