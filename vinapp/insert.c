@@ -66,26 +66,29 @@ static void insert(FILE *archive, struct File_info **dir,
         }
     }
 
-    uchar buffer[BUFFERSIZE];
-    size_t bytes_read;
-    fseek(archive, (*dir)[member_ord-1].pos, SEEK_SET);
-    do {
-        bytes_read = fread(buffer, 1, BUFFERSIZE, member);
-        fwrite(buffer, 1, bytes_read, archive);
-    } while (!feof(member));
+    if ((*dir)[member_ord-1].size > 0) {
+        uchar buffer[BUFFERSIZE];
+        size_t bytes_read;
+        fseek(archive, (*dir)[member_ord-1].pos, SEEK_SET);
+        do {
+            bytes_read = fread(buffer, 1, BUFFERSIZE, member);
+            fwrite(buffer, 1, bytes_read, archive);
+        } while (!feof(member));
+    }
 
     write_dir(archive, *dir, *dirnmemb);
 
     fclose(member);
 
-    // depois de escrever o arquivo, checa se é um diretório;
-    // se for, insere recursivamente.
-    char **childv = malloc(sizeof(char*));
+    // depois de inserir o membro, checa se é um diretório. se for, insere recursivamente.
+    char **childv = calloc(1, sizeof(char*));
     if (!childv)
         MEM_ERR(1, "insert.c: insert() (childv)");
     size_t childc = peek_dir(member_name, &childv);
     for (size_t i = 0; i < childc; i++) {
-        insert(archive, dir, dirnmemb, childv[i]);
+        char child_full_path[MAX_FNAME_LEN] = {0};
+        snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s", member_name, childv[i]);
+        insert(archive, dir, dirnmemb, child_full_path);
         free(childv[i]);
     }
     free(childv);
