@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include "libbin.h"
 #include "insert.h"
-#include "list.h"
+#include "content.h"
 #include "remove.h"
+#include "move.h"
 
 #define USAGE_EXIT(err) do {                                                    \
     fprintf(stderr, "Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n", \
@@ -75,7 +76,6 @@ char parse_options(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    char *mvtarget = NULL;
     char *archive_path = NULL;
     opterr = 0;
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
         update_archive(archive_path, argc - 3, argv + 3);
         break;
     case 'm':
-        mvtarget = argv[2];
+        move_member(archive_path, argv[2], argv[4]);
         break;
     case 'x':
         break;

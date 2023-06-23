@@ -1,2 +1,2 @@
-- consertar a função de inserção que quebrou depois de criar a peek_dir (insert.c, libbin.c)
+- move não funciona
 - não esquecer de colocar os fontes no diretorio src e atualizar o makefile

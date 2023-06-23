@@ -28,6 +28,10 @@ static struct File_info fill_file_info(struct File_info *dir,
 
 static void insert(FILE *archive, struct File_info **dir,
                    size_t *dirnmemb, char *member_name) {
+    size_t memb_name_size = strnlen(member_name, MAX_FNAME_LEN);
+    if (member_name[memb_name_size - 1] == '/')
+        member_name[memb_name_size - 1] = '\0';
+
     FILE *member = fopen(member_name, "rb");
     if (!member) {
         DNE_WARN(member_name);
@@ -87,7 +91,7 @@ static void insert(FILE *archive, struct File_info **dir,
     size_t childc = peek_dir(member_name, &childv);
     for (size_t i = 0; i < childc; i++) {
         char child_full_path[MAX_FNAME_LEN] = {0};
-        snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s\0", member_name, childv[i]);
+        snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s", member_name, childv[i]);
         insert(archive, dir, dirnmemb, child_full_path);
         free(childv[i]);
     }

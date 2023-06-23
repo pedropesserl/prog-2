@@ -7,6 +7,11 @@
 
 #define BUFFERSIZE 1024
 
+#define NOT_IN_ARCH_WARN(member) do {                                            \
+        printf("Aviso: o membro %s não está no archive especificado. ", member); \
+        printf("Ignorado.\n");                                                   \
+    } while (0)
+
 struct File_info {
     char name[MAX_FNAME_LEN], uid[MAX_UNAME_LEN], gid[MAX_GNAME_LEN];
     int perm;    // Modo e permissões do arquivo.
@@ -49,5 +54,9 @@ size_t get_pos(struct File_info *dir, size_t ord);
 // Dado um nome de arquivo membname, escreve em buffer sua versão relativizada,
 // se já não for.
 void standardize_name(char *membname, char *buffer);
+
+// Dado um nome de arquivo membname, escreve em buffer "std_name/", em que std_name
+// é a versão relativizada de membname.
+size_t make_dir_name(char *membname, char *buffer);
 
 #endif // ARCHIVER_H_

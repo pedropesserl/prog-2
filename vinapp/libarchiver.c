@@ -106,3 +106,10 @@ void standardize_name(char *membname, char *buffer) {
     else
         strncpy(buffer, membname, MAX_FNAME_LEN);
 }
+
+size_t make_dir_name(char *membname, char *buffer) {
+    char std_name[MAX_FNAME_LEN-1] = {0};
+    standardize_name(membname, std_name);
+    snprintf(buffer, MAX_FNAME_LEN, "%s/", std_name);
+    return strnlen(buffer, MAX_FNAME_LEN);
+}

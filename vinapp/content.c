@@ -7,6 +7,11 @@ void list_archive(char *archive_path) {
     if (!archive)
         DNE_ERR(2, archive_path);
 
+    if (get_size(archive) == 0) {
+        printf("O arquivo %s está vazio.\n", archive_path);
+        return;
+    }
+
     size_t dirnmemb = 0;
     struct File_info *dir = read_dir(archive, &dirnmemb);
     
@@ -17,6 +22,6 @@ void list_archive(char *archive_path) {
         format_perm(permstring, dir[i].perm);
         printf("%s %s/%s %8ld %s %s\n",
                permstring,  dir[i].uid, dir[i].gid,
-               dir[i].size, timestring, dir[i].name);
+               dir[i].size, timestring, dir[i].name+2);
     }
 }
