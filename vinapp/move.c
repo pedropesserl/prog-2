@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "libbin.h"
 #include "libarchiver.h"
 #include "move.h"
@@ -32,12 +33,16 @@ void move_member(char *archive_path, char *target, char *member) {
         NOT_IN_ARCH_WARN(member);
         return;
     }
+    if (strncmp(std_target, std_member, MAX_FNAME_LEN) == 0) {
+        printf("Aviso: member e target são o mesmo arquivo. Ignorado.\n");
+        return;
+    }
     
     size_t mbrsz = dir[mbr_ord-1].size;
     size_t curr_mbrpos = dir[mbr_ord-1].pos;
     size_t new_mbrpos = dir[tgt_ord-1].pos + dir[tgt_ord-1].size;
     open_space(archive, mbrsz, new_mbrpos);
-    curr_mbrpos += mbr_ord < tgt_ord ? 0 : mbrsz; // a posição de member pode mudar
+    curr_mbrpos += mbr_ord > tgt_ord ? mbrsz : 0; // a posição de member pode mudar
                                                   // devido à abertura de espaço
     // ... copia bytes do membro para o espaço aberto
     uchar buffer[BUFFERSIZE];
@@ -54,7 +59,7 @@ void move_member(char *archive_path, char *target, char *member) {
     fseek(archive, new_mbrpos + i*BUFFERSIZE, SEEK_SET);
     fwrite(buffer, 1, remainder, archive);
 
-    remove_space(archive, mbrsz, dir[mbr_ord-1].pos);
+    remove_space(archive, mbrsz, curr_mbrpos);
 
     struct File_info member_info = dir[mbr_ord-1];
     // atualiza diretório
