@@ -83,12 +83,26 @@ void extract_from_archive(char *archive_path, int nmemb, char **membv) {
     size_t dirnmemb = 0;
     struct File_info *dir = read_dir(archive, &dirnmemb);
 
-    if (nmemb != 0)
-        for (int i = 0; i < nmemb; i++)
+    if (nmemb > 0) {
+        // depois de extrair o arquivo, se for um diretório, extrai os filhos.
+        for (int i = 0; i < nmemb; i++) {
             extract(archive, dir, dirnmemb, membv[i]);
-    else
-        for (size_t i = 0; i < dirnmemb; i++)
+            char dir_name[MAX_FNAME_LEN] = {0};
+            size_t dir_name_sz = make_dir_name(membv[i], dir_name);
+            for (size_t j = 0; j < dirnmemb; j++)
+                if (strncmp(dir[j].name, dir_name, dir_name_sz) == 0)
+                    extract(archive, dir, dirnmemb, dir[j].name);
+        }
+    } else {
+        for (size_t i = 0; i < dirnmemb; i++) {
             extract(archive, dir, dirnmemb, dir[i].name);
+            char dir_name[MAX_FNAME_LEN] = {0};
+            size_t dir_name_sz = make_dir_name(membv[i], dir_name);
+            for (size_t j = 0; j < dirnmemb; j++)
+                if (strncmp(dir[j].name, dir_name, dir_name_sz) == 0)
+                    extract(archive, dir, dirnmemb, dir[j].name);
+        }
+    }
 
     fclose(archive);
     free(dir);
