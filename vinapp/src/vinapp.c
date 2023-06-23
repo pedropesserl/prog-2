@@ -6,6 +6,7 @@
 #include "content.h"
 #include "remove.h"
 #include "move.h"
+#include "extract.h"
 
 #define USAGE_EXIT(err) do {                                                    \
     fprintf(stderr, "Uso: %s -[iamxrch] <archive> [membro1 [membro2 [...]]]\n", \
@@ -97,6 +98,7 @@ int main(int argc, char **argv) {
         move_member(archive_path, argv[2], argv[4]);
         break;
     case 'x':
+        extract_from_archive(archive_path, argc - 3, argv + 3);
         break;
     case 'r':
         remove_from_archive(archive_path, argc - 3, argv + 3);

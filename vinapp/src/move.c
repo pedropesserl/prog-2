@@ -44,7 +44,7 @@ void move_member(char *archive_path, char *target, char *member) {
     open_space(archive, mbrsz, new_mbrpos);
     curr_mbrpos += mbr_ord > tgt_ord ? mbrsz : 0; // a posição de member pode mudar
                                                   // devido à abertura de espaço
-    // ... copia bytes do membro para o espaço aberto
+    // copia bytes do membro para o espaço aberto
     uchar buffer[BUFFERSIZE];
     size_t i = 0;
     for (; i < mbrsz / BUFFERSIZE; i++) {

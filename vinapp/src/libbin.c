@@ -32,8 +32,8 @@ time_t get_modtime(char *path) {
 
 void open_space(FILE *f, size_t space, size_t pos) {
     size_t curr_pos = ftell(f);
-    uchar buffer[BUFFERSIZE] = {0};
     size_t sz = get_size(f);
+    uchar buffer[BUFFERSIZE] = {0};
     size_t btm = sz - pos + 1;
 
     ftruncate(fileno(f), sz + space);

@@ -32,12 +32,11 @@
     } while (0)
 
 #define DNE_WARN(filename)                                                          \
-        printf("Aviso: arquivo ou diretório %s não existe. Ignorado.\n", filename);                     
+        printf("Aviso: arquivo ou diretório %s não existe. Ignorado.\n", filename);
 
-#define EXISTS_ERR(err, filename) do {                                              \
-        fprintf(stderr, "Erro: arquivo ou diretório %s já existe. ", filename);     \
-        fprintf(stderr, "Não é possível sobrescrevê-lo.\n");                        \
-        exit(err);                                                                  \
+#define EXISTS_WARN(filename) do {                                                  \
+        fprintf(stderr, "Erro: arquivo ou diretório %s já existe, e ", filename);   \
+        fprintf(stderr, "não é possível sobrescrevê-lo. Ignorado.\n");              \
     } while (0)
 
 // Retorna o tamanho do arquivo f em bytes.

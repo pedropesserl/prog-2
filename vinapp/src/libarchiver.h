@@ -59,4 +59,8 @@ void standardize_name(char *membname, char *buffer);
 // é a versão relativizada de membname.
 size_t make_dir_name(char *membname, char *buffer);
 
+// Dado um nome padronizado std_name e um diretório dir de dirnmemb membros,
+// retorna as permissões daquele arquivo no diretório.
+int get_perms_from_dir(struct File_info *dir, size_t dirnmemb, char *std_name);
+
 #endif // ARCHIVER_H_

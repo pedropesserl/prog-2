@@ -111,11 +111,14 @@ void insert_in_archive(char *archive_path, int nmemb, char **membv) {
             archive = freopen(archive_path, "wb+", archive);
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
-            MEM_ERR(1, "insert.c: insert_soft()");
+            MEM_ERR(1, "insert.c: insert_in_archive()");
     }
 
     for (int i = 0; i < nmemb; i++)
         insert(archive, &dir, &dirnmemb, membv[i]);
+
+    fclose(archive);
+    free(dir);
 }
 
 void update_archive(char *archive_path, int nmemb, char **membv) {
@@ -131,7 +134,7 @@ void update_archive(char *archive_path, int nmemb, char **membv) {
             archive = freopen(archive_path, "wb+", archive);
         dir = (struct File_info*)calloc(1, sizeof(struct File_info));
         if (!dir)
-            MEM_ERR(1, "insert.c: insert_soft()");
+            MEM_ERR(1, "insert.c: update_archive()");
     }
 
     for (int i = 0; i < nmemb; i++) {
@@ -141,8 +144,20 @@ void update_archive(char *archive_path, int nmemb, char **membv) {
         if (member_ord == 0) {
             insert(archive, &dir, &dirnmemb, membv[i]);
         } else {
-            if (difftime(get_modtime(membv[i]), dir[member_ord-1].td) > 0)
+            time_t mtd = get_modtime(membv[i]);
+            if (mtd == 0) {
+                DNE_WARN(membv[i]);
+                continue;
+            }
+            if (difftime(mtd, dir[member_ord-1].td) > 0)
                 insert(archive, &dir, &dirnmemb, membv[i]);
+            else {
+                printf("O membro %s não é mais novo que sua ", membv[i]);
+                printf("contraparte em %s. Ignorado.\n", archive_path);
+            }
         }
     }
+
+    fclose(archive);
+    free(dir);
 }

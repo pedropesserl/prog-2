@@ -113,3 +113,10 @@ size_t make_dir_name(char *membname, char *buffer) {
     snprintf(buffer, MAX_FNAME_LEN, "%s/", std_name);
     return strnlen(buffer, MAX_FNAME_LEN);
 }
+
+int get_perms_from_dir(struct File_info *dir, size_t dirnmemb, char *std_name) {
+    for (size_t i = 0; i < dirnmemb; i++)
+        if (strncmp(std_name, dir[i].name, MAX_FNAME_LEN) == 0)
+            return dir[i].perm;
+    return 0;
+}
