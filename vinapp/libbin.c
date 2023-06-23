@@ -47,10 +47,11 @@ void open_space(FILE *f, size_t space, size_t pos) {
 
     fseek(f, -remainder, SEEK_END);
     for (size_t i = 1; i <= btm / BUFFERSIZE; i++) {
-        fseek(f, -(space + i*BUFFERSIZE), SEEK_CUR);
+        fseek(f, -(space + BUFFERSIZE), SEEK_CUR);
         fread(buffer, 1, BUFFERSIZE, f);
-        fseek(f, -(remainder + i*BUFFERSIZE), SEEK_END);
+        fseek(f, space - BUFFERSIZE, SEEK_CUR);
         fwrite(buffer, 1, BUFFERSIZE, f);
+        fseek(f, -BUFFERSIZE, SEEK_CUR);
     }
 
     fseek(f, curr_pos, SEEK_SET);
