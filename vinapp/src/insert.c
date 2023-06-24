@@ -93,8 +93,9 @@ static void insert(FILE *archive, struct File_info **dir,
         char child_full_path[MAX_FNAME_LEN] = {0};
         snprintf(child_full_path, MAX_FNAME_LEN, "%s/%s", member_name, childv[i]);
         insert(archive, dir, dirnmemb, child_full_path);
-        free(childv[i]);
     }
+    for (size_t i = 0; i < childc; i++)
+        free(childv[i]);
     free(childv);
 }
 

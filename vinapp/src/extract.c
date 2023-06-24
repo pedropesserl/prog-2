@@ -94,14 +94,8 @@ void extract_from_archive(char *archive_path, int nmemb, char **membv) {
                     extract(archive, dir, dirnmemb, dir[j].name);
         }
     } else {
-        for (size_t i = 0; i < dirnmemb; i++) {
+        for (size_t i = 0; i < dirnmemb; i++)
             extract(archive, dir, dirnmemb, dir[i].name);
-            char dir_name[MAX_FNAME_LEN] = {0};
-            size_t dir_name_sz = make_dir_name(membv[i], dir_name);
-            for (size_t j = 0; j < dirnmemb; j++)
-                if (strncmp(dir[j].name, dir_name, dir_name_sz) == 0)
-                    extract(archive, dir, dirnmemb, dir[j].name);
-        }
     }
 
     fclose(archive);

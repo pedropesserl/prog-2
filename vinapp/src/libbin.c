@@ -90,7 +90,7 @@ size_t peek_dir(char *path, char ***childv) {
     while ((child = readdir(d)) != NULL) {
         if (strncmp(child->d_name, ".", MAX_FNAME_LEN) != 0 &&
             strncmp(child->d_name, "..", MAX_FNAME_LEN) != 0) {
-            *childv = reallocarray(*childv, ++childc, 1);
+            *childv = reallocarray(*childv, ++childc, sizeof(char*));
             (*childv)[childc-1] = calloc(MAX_FNAME_LEN, sizeof(char));
             if (!(*childv)[childc-1])
                 MEM_ERR(1, "libbin.c: peek_dir()");
