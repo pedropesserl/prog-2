@@ -7,6 +7,10 @@
 
 static void remove_trunc(FILE *archive, struct File_info **dir,
                          size_t *dirnmemb, char *member_name) {
+    size_t memb_name_size = strnlen(member_name, MAX_FNAME_LEN);
+    if (member_name[memb_name_size - 1] == '/')
+        member_name[memb_name_size - 1] = '\0';
+
     char std_name[MAX_FNAME_LEN] = {0};
     standardize_name(member_name, std_name);
     size_t member_ord = get_ord(*dir, *dirnmemb, std_name);

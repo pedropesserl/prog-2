@@ -71,7 +71,7 @@ static void insert(FILE *archive, struct File_info **dir,
     }
 
     if ((*dir)[member_ord-1].size > 0) {
-        uchar buffer[BUFFERSIZE];
+        uchar buffer[BUFFERSIZE] = {0};
         size_t bytes_read;
         fseek(archive, (*dir)[member_ord-1].pos, SEEK_SET);
         do {
@@ -139,7 +139,7 @@ void update_archive(char *archive_path, int nmemb, char **membv) {
     }
 
     for (int i = 0; i < nmemb; i++) {
-        char std_name[MAX_FNAME_LEN];
+        char std_name[MAX_FNAME_LEN] = {0};
         standardize_name(membv[i], std_name);
         size_t member_ord = get_ord(dir, dirnmemb, std_name);
         if (member_ord == 0) {
