@@ -15,13 +15,17 @@ void list_archive(char *archive_path) {
     size_t dirnmemb = 0;
     struct File_info *dir = read_dir(archive, &dirnmemb);
     
-    char timestring[17] = {0};
+    char usr_string[9] = {0};
+    char grp_string[9] = {0};
     char permstring[11] = {0};
+    char timestring[17] = {0};
     for (size_t i = 0; i < dirnmemb; i++) {
-        format_modtime(timestring, dir[i].td);
+        format_uid(usr_string, dir[i].uid);
+        format_gid(grp_string, dir[i].gid);
         format_perm(permstring, dir[i].perm);
+        format_modtime(timestring, dir[i].td);
         printf("%s %s/%s %8ld %s %s\n",
-               permstring,  dir[i].uid, dir[i].gid,
+               permstring,  usr_string, grp_string,
                dir[i].size, timestring, dir[i].name+2);
     }
 }

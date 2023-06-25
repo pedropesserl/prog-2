@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "libbin.h"
 #include "insert.h"
-#include "content.h"
 #include "remove.h"
+#include "content.h"
 #include "move.h"
 #include "extract.h"
 

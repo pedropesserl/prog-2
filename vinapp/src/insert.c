@@ -1,11 +1,11 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <pwd.h>
 #include <time.h>
 #include "libarchiver.h"
 #include "insert.h"
 
+// Preenche uma struct File_info com as informações necessárias sobre um arquivo.
 static struct File_info fill_file_info(struct File_info *dir,
                                        FILE *member,
                                        char *member_name,
@@ -16,8 +16,8 @@ static struct File_info fill_file_info(struct File_info *dir,
     standardize_name(member_name, std);
     strncpy(memb.name, std, MAX_FNAME_LEN);
 
-    get_uid(memb.uid, member_name);
-    get_gid(memb.gid, member_name);
+    memb.uid = get_uid(member_name);
+    memb.gid = get_gid(member_name);
     memb.perm = get_perm(member_name);
     memb.td = get_modtime(member_name);
     memb.size = get_size(member);

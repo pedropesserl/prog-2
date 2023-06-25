@@ -27,12 +27,12 @@
     } while (0)
 
 #define DNE_ERR(err, filename) do {                                                 \
-        fprintf(stderr, "Erro: arquivo ou diretório %s não existe.\n", filename);   \
+        fprintf(stderr, "Erro: arquivo %s não existe.\n", filename);                \
         exit(err);                                                                  \
     } while (0)
 
 #define DNE_WARN(filename)                                                          \
-        printf("Aviso: arquivo ou diretório %s não existe. Ignorado.\n", filename);
+        printf("Aviso: arquivo %s não existe. Ignorado.\n", filename);
 
 #define EXISTS_WARN(filename) do {                                                  \
         fprintf(stderr, "Erro: arquivo ou diretório %s já existe, e ", filename);   \
@@ -41,6 +41,12 @@
 
 // Retorna o tamanho do arquivo f em bytes.
 size_t get_size(FILE *f);
+
+// Retorna o user id do arquivo de nome path.
+int get_uid(char *path);
+
+// Retorna o group id do arquivo de nome path.
+int get_gid(char *path);
 
 // Retorna o modo e permissões do arquivo de nome path, em um
 // int (campo st_mode da struct stat).

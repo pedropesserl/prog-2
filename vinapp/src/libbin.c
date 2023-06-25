@@ -18,6 +18,18 @@ size_t get_size(FILE *f) {
     return sz;
 }
 
+int get_uid(char *path) {
+    struct stat info;
+    stat(path, &info);
+    return info.st_uid;
+}
+
+int get_gid(char *path) {
+    struct stat info;
+    stat(path, &info);
+    return info.st_gid;
+}
+
 int get_perm(char *path) {
     struct stat info;
     stat(path, &info);

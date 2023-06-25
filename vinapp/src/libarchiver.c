@@ -18,8 +18,12 @@ struct File_info *read_dir(FILE *archive, size_t *dirnmemb) {
     size_t dirsize = get_size(archive) - dirpos;
     *dirnmemb = dirsize / sizeof(struct File_info);
     struct File_info *dir = (struct File_info*)calloc(*dirnmemb, sizeof(struct File_info));
-    if (!dir)
-        MEM_ERR(1, "libarchiver.c: read_dir()");
+    if (!dir) {
+        fprintf(stderr, "Erro de alocação de memória em libarchiver.c: read_dir().\n");
+        fprintf(stderr, "Certifique-se que o archive especificado está no formato");
+        fprintf(stderr, " correto.\n");
+        exit(1);
+    }
     
     fread(dir, sizeof(struct File_info), *dirnmemb, archive);
     rewind(archive);
@@ -35,17 +39,13 @@ void write_dir(FILE *archive, struct File_info *dir, size_t dirnmemb) {
     rewind(archive);
 }
 
-void get_uid(char *buffer, char *path) {
-    struct stat info;
-    stat(path, &info);
-    struct passwd *pwd = getpwuid(info.st_uid);
+void format_uid(char *buffer, int uid) {
+    struct passwd *pwd = getpwuid(uid);
     strncpy(buffer, pwd->pw_name, MAX_UNAME_LEN);
 }
 
-void get_gid(char *buffer, char *path) {
-    struct stat info;
-    stat(path, &info);
-    struct group *grp = getgrgid(info.st_gid);
+void format_gid(char *buffer, int gid) {
+    struct group *grp = getgrgid(gid);
     strncpy(buffer, grp->gr_name, MAX_GNAME_LEN);
 }
 
